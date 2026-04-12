@@ -2,12 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>アリア コンシェルジュ</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 16px; }
+html, body { height: 100%; }
+body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-content: center; align-items: flex-start; min-height: 100%; padding: 16px; }
 
 .app { display: flex; width: 100%; max-width: 700px; height: 600px; border: 1px solid #ddd; border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin: auto; position: relative; }
 
@@ -22,11 +23,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .side-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
 .side-btn.danger:hover { background: #FCEBEB; }
 
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 
 .mobile-header { display: none; }
 
-.status-bar { padding: 7px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; background: #fafafa; }
+.status-bar { padding: 7px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; background: #fafafa; flex-shrink: 0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .status-dot.gray { background: #ccc; }
 .status-dot.green { background: #1D9E75; }
@@ -37,11 +38,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .user-badge { font-size: 11px; color: #085041; background: #E1F5EE; border-radius: 20px; padding: 2px 8px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
 .login-btn-small { font-size: 11px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 20px; padding: 3px 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
-.header { padding: 8px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+.header { padding: 8px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
 .header-title { font-size: 13px; color: #888; }
 .history-count { font-size: 11px; color: #aaa; background: #f3f2f8; border-radius: 20px; padding: 2px 10px; }
 
-.chat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
+.chat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .msg { display: flex; gap: 8px; align-items: flex-start; }
 .msg.user { flex-direction: row-reverse; }
 .bubble { max-width: 78%; font-size: 14px; line-height: 1.7; padding: 10px 14px; border-radius: 14px; word-break: break-word; }
@@ -56,11 +57,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
 
-.quick-btns { display: flex; flex-direction: column; gap: 4px; padding: 0 14px 8px; }
+.quick-btns { display: flex; flex-direction: column; gap: 4px; padding: 0 14px 8px; flex-shrink: 0; }
 .qbtn { font-size: 12px; color: #555; background: #faf9f7; border: 1px solid #eee; border-radius: 8px; padding: 7px 10px; cursor: pointer; text-align: left; }
 .qbtn:hover { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
 
-.input-row { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid #eee; }
+.input-row { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid #eee; flex-shrink: 0; }
 #user-input { flex: 1; font-size: 14px; padding: 9px 12px; border-radius: 10px; border: 1px solid #ddd; background: white; color: #222; resize: none; height: 40px; font-family: sans-serif; }
 #user-input:focus { outline: none; border-color: #7F77DD; }
 #send-btn { padding: 0 16px; border-radius: 10px; border: none; background: #534AB7; color: white; font-size: 13px; font-weight: 600; cursor: pointer; height: 40px; }
@@ -70,7 +71,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .day-sep { text-align: center; font-size: 11px; color: #bbb; margin: 2px 0; }
 .day-sep::before, .day-sep::after { content:''; display:inline-block; width:50px; height:1px; background:#eee; vertical-align:middle; margin:0 6px; }
 
-.toast { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 12px; padding: 8px 16px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 20; }
+.toast { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 12px; padding: 8px 16px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 20; }
 .toast.show { opacity: 1; }
 
 .drawer-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 30; border-radius: 16px; }
@@ -78,7 +79,6 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .drawer { position: absolute; top: 0; right: -220px; width: 200px; height: 100%; background: white; border-left: 1px solid #eee; z-index: 31; transition: right 0.25s ease; padding: 20px 16px; display: flex; flex-direction: column; gap: 10px; }
 .drawer.open { right: 0; }
 .drawer-char { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid #eee; margin-bottom: 4px; }
-.drawer-char img { width: 72px; height: 72px; object-fit: contain; }
 .drawer-char .name { font-size: 14px; font-weight: 600; color: #333; }
 .drawer-char .role { font-size: 11px; color: #888; }
 .drawer-btn { font-size: 13px; color: #555; background: #faf9f7; border: 1px solid #eee; border-radius: 8px; padding: 9px 12px; cursor: pointer; text-align: left; }
@@ -86,33 +86,53 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .drawer-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
 .drawer-btn.danger:hover { background: #FCEBEB; }
 .drawer-close { font-size: 12px; color: #aaa; text-align: center; cursor: pointer; margin-top: auto; padding-top: 10px; }
-.drawer-close:hover { color: #666; }
 
 .menu-btn { width: 32px; height: 32px; background: #EEEDFE; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; flex-shrink: 0; }
 .menu-btn span { display: block; width: 14px; height: 2px; background: #534AB7; border-radius: 1px; }
 
 @media (max-width: 520px) {
-  body { padding: 0; background: white; }
-  .app { max-width: 100%; height: 100dvh; border-radius: 0; border: none; box-shadow: none; flex-direction: column; }
+  body { padding: 0; background: white; align-items: stretch; }
+  .app {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    flex-direction: column;
+  }
   .sidebar { display: none; }
-  .mobile-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #faf9f7; border-bottom: 1px solid #eee; flex-shrink: 0; }
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    background: #faf9f7;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+  }
   .mobile-header .char-img-sm { width: 40px; height: 40px; object-fit: contain; }
   .mobile-header .char-info { flex: 1; min-width: 0; }
   .mobile-header .char-info .name { font-size: 14px; font-weight: 600; color: #333; }
   .mobile-header .char-info .mood { font-size: 11px; color: #534AB7; }
-  .status-bar { padding: 5px 14px; }
-  .status-text { font-size: 11px; }
   .chat-log { padding: 12px; }
   .bubble { font-size: 15px; }
-  .input-row { padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .input-row {
+    padding: 10px 12px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
   #user-input { font-size: 16px; }
+  .drawer-overlay { border-radius: 0; }
+  .toast { bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px)); }
 }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="sidebar">
-    <img id="char-img-side" class="char-img" src="data:image/png;base64,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" alt="アリア">
+    <img id="char-img-side" class="char-img" src="" alt="アリア">
     <div class="char-name">アリア</div>
     <div class="char-role">AIコンシェルジュ</div>
     <div class="mood-pill" id="mood-text-side">待機中</div>
@@ -124,7 +144,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 
   <div class="main">
     <div class="mobile-header">
-      <img id="char-img-mobile" class="char-img-sm" src="data:image/png;base64,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" alt="アリア">
+      <img id="char-img-mobile" class="char-img-sm" src="" alt="アリア">
       <div class="char-info">
         <div class="name">アリア</div>
         <div class="mood" id="mood-text-mobile">待機中</div>
@@ -161,7 +181,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
   <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="drawer" id="drawer">
     <div class="drawer-char">
-      <img id="char-img-drawer" src="data:image/png;base64,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" alt="アリア" style="width:72px;height:72px;object-fit:contain;">
+      <img id="char-img-drawer" src="" alt="アリア" style="width:72px;height:72px;object-fit:contain;">
       <div class="name">アリア</div>
       <div class="role">AIコンシェルジュ</div>
     </div>
@@ -180,6 +200,7 @@ const CLIENT_ID  = "334133876857-nr04a880ion3ilmbkbdutgml40fmhpnt.apps.googleuse
 const WORKER_URL = "https://aria-proxy.ueasfviivjg.workers.dev";
 const DRIVE_FILE_NAME = "aria_history.json";
 const LOCAL_KEY  = "aria_history";
+const AUTH_KEY   = "aria_auth";
 const MAX_HISTORY = 60;
 
 const SYSTEM = `あなたは「アリア」という名前の親しみやすいAIコンシェルジュです。
@@ -194,6 +215,11 @@ let displayLog = [];
 let accessToken = null;
 let driveFileId = null;
 let isSyncing = false;
+
+['side','mobile','drawer'].forEach(id => {
+  const el = document.getElementById('char-img-' + id);
+  if (el) el.src = IMG_NORMAL;
+});
 
 function openDrawer() {
   document.getElementById('drawer').classList.add('open');
@@ -212,7 +238,6 @@ function setStatus(type, msg) {
 function setMood(mood) {
   const src = mood === 'happy' ? IMG_HAPPY : IMG_NORMAL;
   const label = mood === 'happy' ? 'うれしい' : '通常';
-  const bg = mood === 'happy' ? '#FFF3E0' : '#EEEDFE';
   const color = mood === 'happy' ? '#854F0B' : '#534AB7';
   ['side','mobile','drawer'].forEach(id => {
     const img = document.getElementById('char-img-' + id);
@@ -220,7 +245,7 @@ function setMood(mood) {
   });
   const moodSide = document.getElementById('mood-text-side');
   const moodMobile = document.getElementById('mood-text-mobile');
-  if (moodSide) { moodSide.textContent = label; moodSide.style.background = bg; moodSide.style.color = color; }
+  if (moodSide) { moodSide.textContent = label; moodSide.style.color = color; }
   if (moodMobile) { moodMobile.textContent = label; moodMobile.style.color = color; }
 }
 
@@ -237,6 +262,20 @@ function saveLocal() {
     displayLog = displayLog.slice(-MAX_HISTORY);
     localStorage.setItem(LOCAL_KEY, JSON.stringify({ history, displayLog, driveFileId }));
   } catch(e) {}
+}
+
+function saveAuth(token, email, expiry) {
+  try { localStorage.setItem(AUTH_KEY, JSON.stringify({ token, email, expiry })); } catch(e) {}
+}
+
+function loadAuth() {
+  try {
+    const saved = localStorage.getItem(AUTH_KEY);
+    if (!saved) return null;
+    const d = JSON.parse(saved);
+    if (Date.now() > d.expiry) { localStorage.removeItem(AUTH_KEY); return null; }
+    return d;
+  } catch(e) { return null; }
 }
 
 function updateCount() {
@@ -305,10 +344,10 @@ function setLoggedIn(email) {
   document.getElementById('user-badge').textContent = email;
   document.getElementById('user-badge').style.display = 'inline-block';
   document.getElementById('login-top-btn').style.display = 'none';
-  const sideBtn = document.getElementById('login-side-btn');
-  if (sideBtn) { sideBtn.textContent = 'ログイン済み'; sideBtn.style.opacity = '0.5'; sideBtn.onclick = null; }
-  const drawerBtn = document.getElementById('login-drawer-btn');
-  if (drawerBtn) { drawerBtn.textContent = 'ログイン済み'; drawerBtn.style.opacity = '0.5'; drawerBtn.onclick = null; }
+  ['login-side-btn','login-drawer-btn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) { btn.textContent = 'ログイン済み'; btn.style.opacity = '0.5'; btn.onclick = null; }
+  });
 }
 
 function signIn() {
@@ -318,11 +357,17 @@ function signIn() {
     callback: async (res) => {
       if (res.error) { setStatus('red', 'ログイン失敗'); return; }
       accessToken = res.access_token;
+      const expiry = Date.now() + (res.expires_in * 1000);
       try {
         const infoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + accessToken } });
         const info = await infoRes.json();
-        setLoggedIn(info.email || 'ログイン済み');
-      } catch(e) { setLoggedIn('ログイン済み'); }
+        const email = info.email || 'ログイン済み';
+        saveAuth(accessToken, email, expiry);
+        setLoggedIn(email);
+      } catch(e) {
+        saveAuth(accessToken, 'ログイン済み', expiry);
+        setLoggedIn('ログイン済み');
+      }
       setStatus('orange', 'Driveから履歴を読み込み中...');
       await loadFromDrive();
     }
@@ -338,6 +383,12 @@ async function loadFromDrive() {
       { headers: { Authorization: 'Bearer ' + accessToken } }
     );
     const searchData = await searchRes.json();
+    if (searchData.error && searchData.error.code === 401) {
+      localStorage.removeItem(AUTH_KEY);
+      setStatus('gray', 'セッションが切れました。再ログインしてください');
+      document.getElementById('login-top-btn').style.display = 'inline-block';
+      return;
+    }
     if (searchData.files && searchData.files.length > 0) {
       driveFileId = searchData.files[0].id;
       const fileRes = await fetch(
@@ -451,6 +502,16 @@ document.getElementById('user-input').addEventListener('keydown', e => {
 });
 
 loadLocal(); renderAll(); updateCount();
+
+window.addEventListener('load', async () => {
+  const auth = loadAuth();
+  if (auth) {
+    accessToken = auth.token;
+    setLoggedIn(auth.email);
+    setStatus('orange', 'Driveから履歴を確認中...');
+    await loadFromDrive();
+  }
+});
 </script>
 </body>
 </html>
