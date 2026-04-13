@@ -587,12 +587,28 @@ async function sendMsg() {
   showTyping();
   try {
     const sendHistory = history.slice(-MAX_SEND * 2);
-    const res = await fetch(WORKER_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200, system:buildSystemPrompt(), messages:sendHistory })
-    });
-    const data = await res.json();
+    const callAPI = async () => {
+      const r = await fetch(WORKER_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200, system:buildSystemPrompt(), messages:sendHistory })
+      });
+      return await r.json();
+    };
+
+    let data = await callAPI();
+    if (data.type === 'error' && data.error?.type === 'overloaded_error') {
+      showToast('混み合っています。5秒後に再試行します...');
+      await new Promise(r => setTimeout(r, 5000));
+      data = await callAPI();
+    }
+    if (data.type === 'error' && data.error?.type === 'overloaded_error') {
+      removeTyping();
+      setMood('sorry');
+      appendAriaMsg('ただいま混み合っています。少し待ってから話しかけてください。', Date.now());
+      document.getElementById('send-btn').disabled = false;
+      return;
+    }
     const raw = data.content?.[0]?.text || 'すみません、うまく返答できませんでした。';
     const metaMatch = raw.match(/ARIA_META:(\{.*?\})/s);
     let mood = 'normal';
