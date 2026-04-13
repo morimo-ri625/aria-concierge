@@ -9,40 +9,40 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-content: center; align-items: flex-start; min-height: 100%; padding: 16px; }
-
-.app { display: flex; width: 100%; max-width: 700px; height: 600px; border: 1px solid #ddd; border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin: auto; position: relative; }
-
-.sidebar { width: 160px; flex-shrink: 0; background: #faf9f7; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; padding: 20px 12px 12px; gap: 6px; }
-.char-img { width: 110px; height: 110px; object-fit: contain; }
-.char-name { font-size: 14px; font-weight: 600; color: #333; margin-top: 2px; }
-.char-role { font-size: 11px; color: #888; text-align: center; line-height: 1.5; }
-.mood-pill { font-size: 11px; color: #534AB7; background: #EEEDFE; border-radius: 20px; padding: 3px 12px; margin-top: 4px; }
-.sidebar-btns { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 10px; }
-.side-btn { font-size: 11px; color: #555; background: white; border: 1px solid #eee; border-radius: 8px; padding: 6px 8px; cursor: pointer; text-align: center; }
-.side-btn:hover { background: #f0effc; color: #3C3489; border-color: #AFA9EC; }
-.side-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
-.side-btn.danger:hover { background: #FCEBEB; }
-
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
-
-.mobile-header { display: none; }
-
-.status-bar { padding: 7px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; background: #fafafa; flex-shrink: 0; }
+.app { display: flex; flex-direction: column; width: 100%; max-width: 780px; height: 620px; border: 1px solid #ddd; border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin: auto; position: relative; }
+.topbar { display: flex; align-items: center; gap: 8px; padding: 7px 14px; background: #faf9f7; border-bottom: 1px solid #eee; flex-shrink: 0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .status-dot.gray { background: #ccc; }
 .status-dot.green { background: #1D9E75; }
 .status-dot.orange { background: #EF9F27; animation: pulse 1s infinite; }
 .status-dot.red { background: #E24B4A; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.status-text { font-size: 12px; color: #666; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.user-badge { font-size: 11px; color: #085041; background: #E1F5EE; border-radius: 20px; padding: 2px 8px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
-.login-btn-small { font-size: 11px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 20px; padding: 3px 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-
-.header { padding: 8px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.header-title { font-size: 13px; color: #888; }
+.status-text { font-size: 11px; color: #666; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-badge { font-size: 11px; color: #085041; background: #E1F5EE; border-radius: 20px; padding: 2px 8px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.login-btn-small { font-size: 11px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 20px; padding: 3px 10px; cursor: pointer; }
+.body-row { flex: 1; display: flex; overflow: hidden; }
+.left-panel { width: 150px; flex-shrink: 0; background: #faf9f7; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; padding: 14px 10px; gap: 8px; overflow-y: auto; }
+.char-img { width: 110px; height: 110px; object-fit: contain; transition: opacity 0.2s; }
+.char-name { font-size: 14px; font-weight: 600; color: #333; }
+.mood-pill { font-size: 11px; color: #534AB7; background: #EEEDFE; border-radius: 20px; padding: 3px 10px; }
+.panel-section { width: 100%; }
+.panel-label { font-size: 10px; color: #aaa; margin-bottom: 5px; padding-left: 2px; }
+.task-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #333; background: white; border: 1px solid #eee; border-radius: 6px; padding: 5px 7px; margin-bottom: 4px; cursor: pointer; }
+.task-item.done { color: #aaa; text-decoration: line-through; }
+.task-item .task-check { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid #AFA9EC; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.task-item.done .task-check { background: #534AB7; border-color: #534AB7; }
+.task-item .task-check::after { content: ''; display: none; }
+.task-item.done .task-check::after { display: block; width: 5px; height: 3px; border-left: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(-45deg) translate(1px, -1px); }
+.task-urgent { color: #E24B4A; font-size: 9px; margin-left: auto; flex-shrink: 0; }
+.side-btn { width: 100%; font-size: 10px; color: #555; background: white; border: 1px solid #eee; border-radius: 6px; padding: 5px 6px; cursor: pointer; text-align: center; }
+.side-btn:hover { background: #f0effc; color: #3C3489; }
+.side-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
+.side-btn.danger:hover { background: #FCEBEB; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.chat-header { padding: 8px 14px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.chat-header-title { font-size: 13px; color: #888; }
 .history-count { font-size: 11px; color: #aaa; background: #f3f2f8; border-radius: 20px; padding: 2px 10px; }
-
-.chat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .msg { display: flex; gap: 8px; align-items: flex-start; }
 .msg.user { flex-direction: row-reverse; }
 .bubble { max-width: 78%; font-size: 14px; line-height: 1.7; padding: 10px 14px; border-radius: 14px; word-break: break-word; }
@@ -50,175 +50,181 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .msg.user .bubble { background: #EEEDFE; color: #26215C; border-bottom-right-radius: 4px; }
 .msg-time { font-size: 10px; color: #bbb; margin-top: 3px; }
 .msg.user .msg-time { text-align: right; }
-.avatar { width: 28px; height: 28px; border-radius: 50%; background: #534AB7; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; }
-.typing { display: flex; gap: 5px; align-items: center; padding: 12px 14px; background: #f3f2f8; border-radius: 14px; border-bottom-left-radius: 4px; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; background: #534AB7; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; }
+.typing { display: flex; gap: 5px; align-items: center; padding: 10px 14px; background: #f3f2f8; border-radius: 14px; border-bottom-left-radius: 4px; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: #aaa; animation: bounce 1.2s infinite; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-
 .quick-btns { display: flex; flex-direction: column; gap: 4px; padding: 0 14px 8px; flex-shrink: 0; }
 .qbtn { font-size: 12px; color: #555; background: #faf9f7; border: 1px solid #eee; border-radius: 8px; padding: 7px 10px; cursor: pointer; text-align: left; }
 .qbtn:hover { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
-
-.input-row { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid #eee; flex-shrink: 0; }
+.input-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; flex-shrink: 0; }
 #user-input { flex: 1; font-size: 14px; padding: 9px 12px; border-radius: 10px; border: 1px solid #ddd; background: white; color: #222; resize: none; height: 40px; font-family: sans-serif; }
 #user-input:focus { outline: none; border-color: #7F77DD; }
 #send-btn { padding: 0 16px; border-radius: 10px; border: none; background: #534AB7; color: white; font-size: 13px; font-weight: 600; cursor: pointer; height: 40px; }
 #send-btn:hover { background: #3C3489; }
 #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
 .day-sep { text-align: center; font-size: 11px; color: #bbb; margin: 2px 0; }
-.day-sep::before, .day-sep::after { content:''; display:inline-block; width:50px; height:1px; background:#eee; vertical-align:middle; margin:0 6px; }
-
-.toast { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 12px; padding: 8px 16px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 20; }
+.day-sep::before, .day-sep::after { content:''; display:inline-block; width:40px; height:1px; background:#eee; vertical-align:middle; margin:0 6px; }
+.toast { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 12px; padding: 8px 16px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 20; }
 .toast.show { opacity: 1; }
-
 .drawer-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 30; border-radius: 16px; }
 .drawer-overlay.open { display: block; }
 .drawer { position: absolute; top: 0; right: -220px; width: 200px; height: 100%; background: white; border-left: 1px solid #eee; z-index: 31; transition: right 0.25s ease; padding: 20px 16px; display: flex; flex-direction: column; gap: 10px; }
 .drawer.open { right: 0; }
-.drawer-char { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid #eee; margin-bottom: 4px; }
-.drawer-char .name { font-size: 14px; font-weight: 600; color: #333; }
-.drawer-char .role { font-size: 11px; color: #888; }
+.drawer-char { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid #eee; }
 .drawer-btn { font-size: 13px; color: #555; background: #faf9f7; border: 1px solid #eee; border-radius: 8px; padding: 9px 12px; cursor: pointer; text-align: left; }
 .drawer-btn:hover { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
 .drawer-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
 .drawer-btn.danger:hover { background: #FCEBEB; }
-.drawer-close { font-size: 12px; color: #aaa; text-align: center; cursor: pointer; margin-top: auto; padding-top: 10px; }
-
-.menu-btn { width: 32px; height: 32px; background: #EEEDFE; border: none; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; flex-shrink: 0; }
-.menu-btn span { display: block; width: 14px; height: 2px; background: #534AB7; border-radius: 1px; }
-
+.drawer-close { font-size: 12px; color: #aaa; text-align: center; cursor: pointer; margin-top: auto; }
+.menu-btn { width: 30px; height: 30px; background: #EEEDFE; border: none; border-radius: 7px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; flex-shrink: 0; }
+.menu-btn span { display: block; width: 13px; height: 2px; background: #534AB7; border-radius: 1px; }
 @media (max-width: 520px) {
   body { padding: 0; background: white; align-items: stretch; }
-  .app {
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    height: 100dvh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    flex-direction: column;
-  }
-  .sidebar { display: none; }
-  .mobile-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    padding-top: max(10px, env(safe-area-inset-top));
-    background: #faf9f7;
-    border-bottom: 1px solid #eee;
-    flex-shrink: 0;
-  }
-  .mobile-header .char-img-sm { width: 40px; height: 40px; object-fit: contain; }
-  .mobile-header .char-info { flex: 1; min-width: 0; }
-  .mobile-header .char-info .name { font-size: 14px; font-weight: 600; color: #333; }
-  .mobile-header .char-info .mood { font-size: 11px; color: #534AB7; }
-  .chat-log { padding: 12px; }
-  .bubble { font-size: 15px; }
-  .input-row {
-    padding: 10px 12px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
+  .app { max-width: 100%; width: 100%; height: 100%; height: 100dvh; border-radius: 0; border: none; box-shadow: none; }
+  .left-panel { display: none; }
+  .topbar { padding-top: max(8px, env(safe-area-inset-top)); }
+  .task-bar { display: flex !important; }
+  .input-row { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
   #user-input { font-size: 16px; }
+  .bubble { font-size: 15px; }
+  .toast { bottom: max(70px, calc(env(safe-area-inset-bottom) + 60px)); }
   .drawer-overlay { border-radius: 0; }
-  .toast { bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px)); }
 }
+.task-bar { display: none; flex-shrink: 0; padding: 7px 12px; background: #faf9f7; border-bottom: 1px solid #eee; gap: 6px; flex-wrap: wrap; align-items: center; }
+.task-bar-label { font-size: 10px; color: #aaa; flex-shrink: 0; }
+.task-chip { font-size: 11px; color: #333; background: white; border: 1px solid #eee; border-radius: 20px; padding: 3px 9px; cursor: pointer; white-space: nowrap; }
+.task-chip.done { color: #aaa; text-decoration: line-through; }
+.task-chip.urgent { border-color: #F09595; color: #A32D2D; }
+
+.login-overlay { position: absolute; inset: 0; background: rgba(249,248,247,0.96); z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; }
+.login-overlay.hidden { display: none; }
+.login-overlay-img { width: 100px; height: 100px; object-fit: contain; }
+.login-overlay-name { font-size: 18px; font-weight: 600; color: #333; }
+.login-overlay-msg { font-size: 14px; color: #888; text-align: center; line-height: 1.7; }
+.login-overlay-btn { font-size: 14px; font-weight: 600; color: white; background: #534AB7; border: none; border-radius: 10px; padding: 12px 28px; cursor: pointer; }
+.login-overlay-btn:hover { background: #3C3489; }
+@media (max-width: 520px) { .login-overlay { border-radius: 0; } }
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="sidebar">
-    <img id="char-img-side" class="char-img" src="" alt="アリア">
-    <div class="char-name">アリア</div>
-    <div class="char-role">AIコンシェルジュ</div>
-    <div class="mood-pill" id="mood-text-side">待機中</div>
-    <div class="sidebar-btns">
-      <button class="side-btn" id="login-side-btn" onclick="signIn()">Googleでログイン</button>
-      <button class="side-btn danger" onclick="clearHistory()">履歴を消去</button>
+  <div class="topbar">
+    <div class="status-dot gray" id="status-dot"></div>
+    <span class="status-text" id="status-text">Googleにログインすると履歴が同期されます</span>
+    <span class="user-badge" id="user-badge" style="display:none"></span>
+    <button class="login-btn-small" id="login-top-btn" onclick="signIn()">ログイン</button>
+    <button class="menu-btn" id="menu-btn" style="display:none" onclick="openDrawer()"><span></span><span></span><span></span></button>
+  </div>
+
+  <div class="task-bar" id="task-bar">
+    <span class="task-bar-label">タスク</span>
+    <div id="task-chips"></div>
+  </div>
+
+  <div class="body-row">
+    <div class="left-panel">
+      <img id="char-img" class="char-img" src="" alt="アリア">
+      <div class="char-name">アリア</div>
+      <div class="mood-pill" id="mood-text">待機中</div>
+
+      <div class="panel-section" id="task-panel" style="margin-top:4px;">
+        <div class="panel-label">タスク</div>
+        <div id="task-list"></div>
+      </div>
+
+      <div class="panel-section" style="margin-top:4px;">
+        <div class="panel-label">メモ</div>
+        <div id="memo-list" style="font-size:10px;color:#666;line-height:1.6;"></div>
+      </div>
+
+      <div style="margin-top:auto; display:flex; flex-direction:column; gap:4px; width:100%;">
+        <button class="side-btn" id="login-side-btn" onclick="signIn()">Googleでログイン</button>
+        <button class="side-btn danger" onclick="clearHistory()">履歴を消去</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="chat-header">
+        <span class="chat-header-title">アリアとの会話</span>
+        <span class="history-count" id="history-count">0 件</span>
+      </div>
+      <div class="chat-log" id="chat-log"></div>
+      <div class="quick-btns" id="quick-btns">
+        <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
+        <button class="qbtn" onclick="quickSend('今日のタスクを整理したいです')">タスクを整理する</button>
+        <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
+      </div>
+      <div class="input-row">
+        <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
+        <button id="send-btn" onclick="sendMsg()">送信</button>
+      </div>
     </div>
   </div>
 
-  <div class="main">
-    <div class="mobile-header">
-      <img id="char-img-mobile" class="char-img-sm" src="" alt="アリア">
-      <div class="char-info">
-        <div class="name">アリア</div>
-        <div class="mood" id="mood-text-mobile">待機中</div>
-      </div>
-      <button class="menu-btn" onclick="openDrawer()"><span></span><span></span><span></span></button>
-    </div>
 
-    <div class="status-bar">
-      <div class="status-dot gray" id="status-dot"></div>
-      <span class="status-text" id="status-text">Googleにログインすると履歴が同期されます</span>
-      <span class="user-badge" id="user-badge" style="display:none"></span>
-      <button class="login-btn-small" id="login-top-btn" onclick="signIn()">ログイン</button>
-    </div>
-
-    <div class="header">
-      <span class="header-title">アリアとの会話</span>
-      <span class="history-count" id="history-count">0 件</span>
-    </div>
-
-    <div class="chat-log" id="chat-log"></div>
-
-    <div class="quick-btns" id="quick-btns">
-      <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
-      <button class="qbtn" onclick="quickSend('今日のタスク整理を手伝ってください')">タスク整理を手伝ってもらう</button>
-      <button class="qbtn" onclick="quickSend('AIコンシェルジュの使い方を教えてください')">使い方のコツを聞く</button>
-    </div>
-
-    <div class="input-row">
-      <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
-      <button id="send-btn" onclick="sendMsg()">送信</button>
-    </div>
+  <div class="login-overlay" id="login-overlay">
+    <img class="login-overlay-img" id="overlay-img" src="" alt="アリア">
+    <div class="login-overlay-name">アリア</div>
+    <div class="login-overlay-msg">AIコンシェルジュ アリアへようこそ。<br>Googleアカウントでログインして<br>会話を始めましょう。</div>
+    <button class="login-overlay-btn" onclick="signIn()">Googleでログイン</button>
   </div>
 
   <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="drawer" id="drawer">
     <div class="drawer-char">
-      <img id="char-img-drawer" src="" alt="アリア" style="width:72px;height:72px;object-fit:contain;">
-      <div class="name">アリア</div>
-      <div class="role">AIコンシェルジュ</div>
+      <img id="char-img-drawer" src="" alt="アリア" style="width:64px;height:64px;object-fit:contain;">
+      <div style="font-size:13px;font-weight:600;color:#333;">アリア</div>
+      <div style="font-size:11px;color:#888;">AIコンシェルジュ</div>
     </div>
     <button class="drawer-btn" id="login-drawer-btn" onclick="signIn()">Googleでログイン</button>
-    <button class="drawer-btn danger" onclick="clearHistory(); closeDrawer()">履歴を消去</button>
+    <button class="drawer-btn danger" onclick="clearHistory();closeDrawer()">履歴を消去</button>
     <div class="drawer-close" onclick="closeDrawer()">閉じる</div>
   </div>
 
   <div class="toast" id="toast"></div>
 </div>
-
 <script>
 const IMG_NORMAL = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEiATwDASIAAhEBAxEB/8QAHAABAAEFAQEAAAAAAAAAAAAAAAcBBAUGCAMC/8QAQBABAAIBAwEDCAcECAcAAAAAAAECAwQFEQYHEiEIMTJBUWFxoRMiUoGRsdFik6KyFBYzVWSSlMEVJVRjcnSD/8QAGAEBAQEBAQAAAAAAAAAAAAAAAAIBAwT/xAAaEQEAAwEBAQAAAAAAAAAAAAAAAQIxERIh/9oADAMBAAIRAxEAPwDssAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeOr1el0eL6XV6nDp8f2st4rH4ypotbo9bj+k0erwamn2sWSLR8ge4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACl7RSlr2niKxzKrEdbaz+gdIbvq+eLY9Hlms/tTWYj5zAOcuv8AqTWdSdQ6nVZs1501bzXT4ufq0pHm4j2z5+fetekN/wBd05ven3DR5bRFbx9Lj5+rkpz41n7mHI87vxbsTDkrlw0y0nmt6xas+6X0senpmdg26Z886XFz/khfOCAAAAAAAAAGJ6y3Sdl6W3LdK8d/BgtOPnzd+fCvzmAan1t2pbX0/uN9t0ulvuGpxTxlmt+7Sk+zn1yyXZ/19tvVt8mmx4r6TW469+cN55i1fbWfW5ry5L5ct8uW83veZta0zzMzPnluPYte1e0Tb+7Mx3ovE++O7LrNI4rjpMBySAAAAAAAAAAAAAAAAAAAANL7bdRODs43GImYnLbFj5/+lZn5RLdEd+UDk7nQlKRPp6zHE/CItLa6Q59Vr6UfFRWnpR8XdbrrZq93Z9FX2afHH8MLtb7ZHG26aPZhp+ULh50AAAAAAAADRe3TPOHs91NYn+1zY6T+PP8As3pHHlCXmvRWGn2tXT5RLa6QgBt3Y9fudou1ftXtH8EtRbN2WZPo+0LZrf4jj8YmP93acW6gAcEAAAAAAAAAAAAAAAAAAAACMfKKvx0roqc+lq+fwrKTkVeUfPGxbXHt1Nv5VV1sIOVp6dfiorT06/F2U6/0McaLBH/br+T2eOgnnQ4J9uOv5PZ50AAAAAAAACMPKKv3eltDT7Wr/KspPRZ5R3P9XNs/9uf5JVXWwgxn+zq3c662WZ/6zHH4zwwDLdGZIxdX7NktPEV12GZn3d+HaVOsAHnQAAAAAAAAAAAAAAAAAAAAIp8pCP8Ake1T/ib/AMqVkW+UZTnpvbr/AGdVPzqquthBatfSj4qDsp15tFu9tWktHrwUn+GF0x3TF+/03tl+eedJi/khkXnQAAAAAAAAI18obF3+j9Nk49DV1+dZSU0Dt7iJ7P8AJM+rU45j5trpDnh66LNOn1mHUR58WSt4+6eXkO63Y0TExExPMT4wLXaJm206O0+MzgpM/wCWF086AAAAAAAAAAAAAAAAAAAABGPlEzSOlNFWbRF51cd2Pb9WeUnIq8o3S5cmx7bq68zjxZ7Vv7ptHh+UqrrYQcA7KdWdCX+k6N2i/PPOkx/kzTBdn2O+LonZ6ZImLRpKcxPwZ1wnUADAAAAAAAaF28Vmez7NMerUY5n8Zb6jzygLZo6GrGOJ7k6qn0kx7OJ4+ba6Q58Bkemtry71v2i2vDE97UZa0mfs158Z+6OZd1uq9oiY2nRxPnjBSP4YXSlYitYrWOIiOIhV50AAAAAAAAAAAAAAAAAAAADGdU7LpeoNi1O06yJjHnr4Wjz0tHjW0fCWTAcx9Rdn/VGz6y+G2159Xh5+pn09JvW0fd4x8JZroDsx3fdNwxane9Jl0G3UtFr1yfVyZf2YjzxHvn7nQQv3LeqY6Ux4646VitKxEVrEeERHqVBDAAAAAAAABZb5tej3natRtmvx/SafPTu2j1x7Jj2TE+K9AQVuvYxvdNXaNt3DRZtPM/VnNa1LRHviImG8dmnZ1p+ls1tw1morq9xtXu1mscUxRPn458Zn3t9FTaZb0ASwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHlm1Onw/22fFj/8AO8R+bxnc9tjz7hpP31f1Bdi0/wCKbZ/eOj/f1/Ujc9tmeI3DSfvq/qC7CsxaItWYmJ8YmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBXbd1fud+oM2waPU5NNo9NERljHbuzktMczzPs8fMnVEva/2ebhu26W33Y6Vz5MlYjUafni0zEcRavt8PUqnO/WwhOfHzjPZOjOqqTMW2DX8x7MUy856T6mjz7DuP+nt+jr1TCjM/1V6l/uHcv9Pb9Hhrtg3vQ4Jz6zaddgxR575MForH38NGT6D6s3Pprd8F8GoyW0dskRm09rc0tWZ8fD1T73T+K9cmOuSk81tEWj4S5c6H6W3PqXd8GHS6e8aaLxObPNfqUrz4+Prn3Oo8OOuLFTFT0aVisfCHK/Ey+gEMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIiIjiPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//Z";
 const IMG_HAPPY  = "data:image/png;base64,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";
 const CLIENT_ID  = "334133876857-nr04a880ion3ilmbkbdutgml40fmhpnt.apps.googleusercontent.com";
 const WORKER_URL = "https://aria-proxy.ueasfviivjg.workers.dev";
-const DRIVE_FILE_NAME = "aria_history.json";
+const DRIVE_CHAT_FILE  = "aria_history.json";
+const DRIVE_MEM_FILE   = "aria_memory.json";
 const LOCAL_KEY  = "aria_history";
+const MEM_KEY    = "aria_memory";
 const AUTH_KEY   = "aria_auth";
-const MAX_HISTORY = 60;
+const MAX_SEND   = 20;
+const MAX_STORE  = 200;
 
-const SYSTEM = `あなたは「アリア」という名前の親しみやすいAIコンシェルジュです。
-ユーザーの情報整理・相談・調査などを温かくサポートします。
-返答の末尾に必ず以下のJSONを付けてください（本文とは別行）:
-MOOD:{"mood":"happy"または"normal"}
-happyは：お礼・褒め・うれしい内容のとき。normalはそれ以外。
-返答は日本語で200字以内を目安に。`;
+const SYSTEM_BASE = `あなたは「アリア」という名前の親しみやすいAIコンシェルジュです。
+ユーザーの情報整理・相談・タスク管理などを温かくサポートします。
+返答の末尾に必ず以下のJSONブロックを付けてください（本文とは別行で）:
+ARIA_META:{"mood":"happy"|"normal","tasks":[{"title":"タスク名","done":true|false,"urgent":true|false}],"memo":"重要情報（名前・好み・継続プロジェクトなど。なければ空文字）"}
+- moodはうれしい・褒める内容なら"happy"、それ以外は"normal"
+- tasksは会話から読み取れるタスク一覧。変化がなければ前回のリストをそのまま返す
+- memoは今回の会話から記憶すべき重要情報があれば追記。なければ空文字
+返答は日本語で250字以内を目安に。`;
 
 let history = [];
 let displayLog = [];
+let memory = { tasks: [], memo: "" };
 let accessToken = null;
 let driveFileId = null;
+let driveMemFileId = null;
 let isSyncing = false;
 
-['side','mobile','drawer'].forEach(id => {
-  const el = document.getElementById('char-img-' + id);
+['char-img','char-img-drawer','overlay-img'].forEach(id => {
+  const el = document.getElementById(id);
   if (el) el.src = IMG_NORMAL;
+});
+
+function isMobile() { return window.innerWidth <= 520; }
+
+window.addEventListener('resize', () => {
+  document.getElementById('menu-btn').style.display = isMobile() ? 'flex' : 'none';
 });
 
 function openDrawer() {
@@ -230,6 +236,18 @@ function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
 }
 
+function showOverlay() {
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('user-input').disabled = true;
+  document.getElementById('send-btn').disabled = true;
+}
+
+function hideOverlay() {
+  document.getElementById('login-overlay').classList.add('hidden');
+  document.getElementById('user-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
 function setStatus(type, msg) {
   document.getElementById('status-dot').className = 'status-dot ' + type;
   document.getElementById('status-text').textContent = msg;
@@ -239,14 +257,46 @@ function setMood(mood) {
   const src = mood === 'happy' ? IMG_HAPPY : IMG_NORMAL;
   const label = mood === 'happy' ? 'うれしい' : '通常';
   const color = mood === 'happy' ? '#854F0B' : '#534AB7';
-  ['side','mobile','drawer'].forEach(id => {
-    const img = document.getElementById('char-img-' + id);
-    if (img) img.src = src;
+  ['char-img','char-img-drawer'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.src = src;
   });
-  const moodSide = document.getElementById('mood-text-side');
-  const moodMobile = document.getElementById('mood-text-mobile');
-  if (moodSide) { moodSide.textContent = label; moodSide.style.color = color; }
-  if (moodMobile) { moodMobile.textContent = label; moodMobile.style.color = color; }
+  const pill = document.getElementById('mood-text');
+  if (pill) { pill.textContent = label; pill.style.color = color; }
+}
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  const chips = document.getElementById('task-chips');
+  const bar = document.getElementById('task-bar');
+  if (!list) return;
+  list.innerHTML = '';
+  if (chips) chips.innerHTML = '';
+  if (!memory.tasks || !memory.tasks.length) {
+    list.innerHTML = '<div style="font-size:10px;color:#bbb;">タスクなし</div>';
+    if (bar) bar.style.display = 'none';
+    return;
+  }
+  if (bar) bar.style.display = 'flex';
+  memory.tasks.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'task-item' + (t.done ? ' done' : '');
+    div.innerHTML = `<div class="task-check"></div><span style="flex:1;font-size:10px;">${t.title}</span>${t.urgent && !t.done ? '<span class="task-urgent">急</span>' : ''}`;
+    div.onclick = () => { memory.tasks[i].done = !memory.tasks[i].done; saveMemLocal(); renderTasks(); };
+    list.appendChild(div);
+    if (chips && !t.done) {
+      const chip = document.createElement('div');
+      chip.className = 'task-chip' + (t.urgent ? ' urgent' : '');
+      chip.textContent = t.title;
+      chip.onclick = () => quickSend(t.title + 'の進捗を教えてください');
+      chips.appendChild(chip);
+    }
+  });
+}
+
+function renderMemo() {
+  const el = document.getElementById('memo-list');
+  if (!el) return;
+  el.textContent = memory.memo || '—';
 }
 
 function loadLocal() {
@@ -258,14 +308,23 @@ function loadLocal() {
 
 function saveLocal() {
   try {
-    history = history.slice(-MAX_HISTORY);
-    displayLog = displayLog.slice(-MAX_HISTORY);
+    history = history.slice(-MAX_STORE);
+    displayLog = displayLog.slice(-MAX_STORE);
     localStorage.setItem(LOCAL_KEY, JSON.stringify({ history, displayLog, driveFileId }));
   } catch(e) {}
 }
 
-function saveAuth(token, email, expiry) {
-  try { localStorage.setItem(AUTH_KEY, JSON.stringify({ token, email, expiry })); } catch(e) {}
+function loadMemLocal() {
+  try {
+    const saved = localStorage.getItem(MEM_KEY);
+    if (saved) { const d = JSON.parse(saved); memory = d; driveMemFileId = d.driveMemFileId||null; }
+  } catch(e) {}
+}
+
+function saveMemLocal() {
+  try {
+    localStorage.setItem(MEM_KEY, JSON.stringify({ ...memory, driveMemFileId }));
+  } catch(e) {}
 }
 
 function loadAuth() {
@@ -276,6 +335,10 @@ function loadAuth() {
     if (Date.now() > d.expiry) { localStorage.removeItem(AUTH_KEY); return null; }
     return d;
   } catch(e) { return null; }
+}
+
+function saveAuth(token, email, expiry) {
+  try { localStorage.setItem(AUTH_KEY, JSON.stringify({ token, email, expiry })); } catch(e) {}
 }
 
 function updateCount() {
@@ -291,11 +354,23 @@ function fmtDate(ts) {
   return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
 }
 
+function buildSystemPrompt() {
+  const now = new Date();
+  const timeStr = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 '+fmt(now.getTime())+'（'+['日','月','火','水','木','金','土'][now.getDay()]+'曜日）';
+  let sys = SYSTEM_BASE + '\n\n現在時刻: ' + timeStr;
+  if (memory.memo) sys += '\n\nユーザーの記憶情報:\n' + memory.memo;
+  if (memory.tasks && memory.tasks.length) {
+    const active = memory.tasks.filter(t=>!t.done);
+    if (active.length) sys += '\n\n現在のタスク:\n' + active.map(t=>'- '+t.title+(t.urgent?'（急）':'')).join('\n');
+  }
+  return sys;
+}
+
 function renderAll() {
   const log = document.getElementById('chat-log');
   log.innerHTML = '';
   if (!displayLog.length) {
-    appendAriaMsg('こんにちは！アリアです。どんなことでも気軽にどうぞ。', Date.now());
+    appendAriaMsg('こんにちは！アリアです。タスク管理や情報整理など、なんでもお任せください。', Date.now());
     return;
   }
   let lastDate = '';
@@ -341,9 +416,11 @@ function showToast(msg) {
 }
 
 function setLoggedIn(email) {
+  hideOverlay();
   document.getElementById('user-badge').textContent = email;
   document.getElementById('user-badge').style.display = 'inline-block';
   document.getElementById('login-top-btn').style.display = 'none';
+  document.getElementById('menu-btn').style.display = 'flex';
   ['login-side-btn','login-drawer-btn'].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) { btn.textContent = 'ログイン済み'; btn.style.opacity = '0.5'; btn.onclick = null; }
@@ -364,54 +441,85 @@ function signIn() {
         const email = info.email || 'ログイン済み';
         saveAuth(accessToken, email, expiry);
         setLoggedIn(email);
-      } catch(e) {
-        saveAuth(accessToken, 'ログイン済み', expiry);
-        setLoggedIn('ログイン済み');
-      }
-      setStatus('orange', 'Driveから履歴を読み込み中...');
+      } catch(e) { saveAuth(accessToken, 'ログイン済み', expiry); setLoggedIn('ログイン済み'); }
+      setStatus('orange', 'Driveから読み込み中...');
       await loadFromDrive();
+      await loadMemFromDrive();
     }
   });
   client.requestAccessToken();
 }
 
+async function driveSearch(name) {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D'${name}'&fields=files(id)`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  const data = await res.json();
+  if (data.error && data.error.code === 401) { localStorage.removeItem(AUTH_KEY); return null; }
+  return (data.files && data.files.length > 0) ? data.files[0].id : null;
+}
+
+async function driveRead(fileId) {
+  const res = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  );
+  return await res.json();
+}
+
+async function driveWrite(fileId, name, content) {
+  const blob = new Blob([JSON.stringify(content)], { type: 'application/json' });
+  if (fileId) {
+    await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,
+      { method: 'PATCH', headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' }, body: blob }
+    );
+    return fileId;
+  } else {
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify({ name, parents: ['appDataFolder'] })], { type: 'application/json' }));
+    form.append('file', blob);
+    const res = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+      { method: 'POST', headers: { Authorization: 'Bearer ' + accessToken }, body: form }
+    );
+    const created = await res.json();
+    return created.id;
+  }
+}
+
 async function loadFromDrive() {
   if (!accessToken) return;
   try {
-    const searchRes = await fetch(
-      `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D'${DRIVE_FILE_NAME}'&fields=files(id,name)`,
-      { headers: { Authorization: 'Bearer ' + accessToken } }
-    );
-    const searchData = await searchRes.json();
-    if (searchData.error && searchData.error.code === 401) {
-      localStorage.removeItem(AUTH_KEY);
-      setStatus('gray', 'セッションが切れました。再ログインしてください');
-      document.getElementById('login-top-btn').style.display = 'inline-block';
-      return;
-    }
-    if (searchData.files && searchData.files.length > 0) {
-      driveFileId = searchData.files[0].id;
-      const fileRes = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,
-        { headers: { Authorization: 'Bearer ' + accessToken } }
-      );
-      const data = await fileRes.json();
+    const fid = await driveSearch(DRIVE_CHAT_FILE);
+    if (fid) {
+      driveFileId = fid;
+      const data = await driveRead(fid);
       if (data.history && data.displayLog) {
         history = data.history;
         displayLog = data.displayLog;
         saveLocal(); updateCount(); renderAll();
         setStatus('green', 'Drive同期済み — ' + fmt(Date.now()));
-        showToast('Driveから履歴を読み込みました（' + Math.floor(history.length/2) + '件）');
-      } else {
-        setStatus('green', 'Drive接続済み（履歴なし）');
+        showToast('履歴を読み込みました（' + Math.floor(history.length/2) + '件）');
+      } else { setStatus('green', 'Drive接続済み'); }
+    } else { setStatus('green', 'Drive接続済み（新規）'); }
+  } catch(e) { setStatus('red', 'Drive読み込み失敗'); }
+}
+
+async function loadMemFromDrive() {
+  if (!accessToken) return;
+  try {
+    const fid = await driveSearch(DRIVE_MEM_FILE);
+    if (fid) {
+      driveMemFileId = fid;
+      const data = await driveRead(fid);
+      if (data) {
+        memory = { tasks: data.tasks||[], memo: data.memo||'' };
+        saveMemLocal(); renderTasks(); renderMemo();
       }
-    } else {
-      setStatus('green', 'Drive接続済み（新規）');
-      showToast('Driveに履歴がないため新規作成します');
     }
-  } catch(e) {
-    setStatus('red', 'Drive読み込み失敗');
-  }
+  } catch(e) {}
 }
 
 async function saveToDrive() {
@@ -419,30 +527,13 @@ async function saveToDrive() {
   isSyncing = true;
   setStatus('orange', 'Driveに同期中...');
   try {
-    const content = JSON.stringify({ history, displayLog });
-    const blob = new Blob([content], { type: 'application/json' });
-    if (driveFileId) {
-      await fetch(
-        `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,
-        { method: 'PATCH', headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' }, body: blob }
-      );
-    } else {
-      const meta = { name: DRIVE_FILE_NAME, parents: ['appDataFolder'] };
-      const form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
-      form.append('file', blob);
-      const createRes = await fetch(
-        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-        { method: 'POST', headers: { Authorization: 'Bearer ' + accessToken }, body: form }
-      );
-      const created = await createRes.json();
-      driveFileId = created.id;
-      saveLocal();
-    }
+    const trimHistory = history.slice(-MAX_STORE);
+    const trimDisplay = displayLog.slice(-MAX_STORE);
+    driveFileId = await driveWrite(driveFileId, DRIVE_CHAT_FILE, { history: trimHistory, displayLog: trimDisplay });
+    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo });
+    saveLocal(); saveMemLocal();
     setStatus('green', 'Drive同期済み — ' + fmt(Date.now()));
-  } catch(e) {
-    setStatus('red', 'Drive同期失敗');
-  }
+  } catch(e) { setStatus('red', 'Drive同期失敗'); }
   isSyncing = false;
 }
 
@@ -471,16 +562,32 @@ async function sendMsg() {
   displayLog.push({ role:'user', text, ts });
   showTyping();
   try {
+    const sendHistory = history.slice(-MAX_SEND * 2);
     const res = await fetch(WORKER_URL, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:history })
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1200, system:buildSystemPrompt(), messages:sendHistory })
     });
     const data = await res.json();
     const raw = data.content?.[0]?.text || 'すみません、うまく返答できませんでした。';
-    const moodMatch = raw.match(/MOOD:\{"mood":"(\w+)"\}/);
-    const mood = moodMatch ? moodMatch[1] : 'normal';
-    const clean = raw.replace(/\nMOOD:\{.*?\}/,'').trim();
+    const metaMatch = raw.match(/ARIA_META:(\{.*?\})/s);
+    let mood = 'normal';
+    if (metaMatch) {
+      try {
+        const meta = JSON.parse(metaMatch[1]);
+        mood = meta.mood || 'normal';
+        if (meta.tasks && meta.tasks.length) {
+          meta.tasks.forEach(newTask => {
+            const idx = memory.tasks.findIndex(t => t.title === newTask.title);
+            if (idx >= 0) { memory.tasks[idx] = { ...memory.tasks[idx], ...newTask }; }
+            else { memory.tasks.push(newTask); }
+          });
+        }
+        if (meta.memo) { memory.memo = (memory.memo ? memory.memo + '\n' : '') + meta.memo; }
+        renderTasks(); renderMemo(); saveMemLocal();
+      } catch(e) {}
+    }
+    const clean = raw.replace(/\nARIA_META:\{.*?\}/s, '').trim();
     history.push({ role:'assistant', content:raw });
     const replyTs = Date.now();
     displayLog.push({ role:'aria', text:clean, ts:replyTs });
@@ -501,15 +608,19 @@ document.getElementById('user-input').addEventListener('keydown', e => {
   if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
 });
 
-loadLocal(); renderAll(); updateCount();
+loadLocal(); loadMemLocal(); renderAll(); renderTasks(); renderMemo(); updateCount();
+showOverlay();
+
+if (isMobile()) document.getElementById('menu-btn').style.display = 'none';
 
 window.addEventListener('load', async () => {
   const auth = loadAuth();
   if (auth) {
     accessToken = auth.token;
     setLoggedIn(auth.email);
-    setStatus('orange', 'Driveから履歴を確認中...');
+    setStatus('orange', 'Driveから確認中...');
     await loadFromDrive();
+    await loadMemFromDrive();
   }
 });
 </script>
