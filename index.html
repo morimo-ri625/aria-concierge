@@ -92,7 +92,13 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
   .bubble { font-size: 15px; }
   .toast { bottom: max(70px, calc(env(safe-area-inset-bottom) + 60px)); }
   .drawer-overlay { border-radius: 0; }
+  .mobile-face { display: flex !important; }
 }
+.mobile-face { display: none; align-items: center; gap: 8px; flex-shrink: 0; }
+.mobile-face-img { width: 36px; height: 36px; object-fit: cover; object-position: top center; border-radius: 50%; border: 2px solid #EEEDFE; }
+.mobile-face-info { display: flex; flex-direction: column; }
+.mobile-face-name { font-size: 13px; font-weight: 600; color: #333; }
+.mobile-face-mood { font-size: 10px; color: #534AB7; }
 .task-bar { display: none; flex-shrink: 0; padding: 7px 12px; background: #faf9f7; border-bottom: 1px solid #eee; gap: 6px; flex-wrap: wrap; align-items: center; }
 .task-bar-label { font-size: 10px; color: #aaa; flex-shrink: 0; }
 .task-chip { font-size: 11px; color: #333; background: white; border: 1px solid #eee; border-radius: 20px; padding: 3px 9px; cursor: pointer; white-space: nowrap; }
@@ -116,6 +122,13 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
     <span class="status-text" id="status-text">Googleにログインすると履歴が同期されます</span>
     <span class="user-badge" id="user-badge" style="display:none"></span>
     <button class="login-btn-small" id="login-top-btn" onclick="signIn()">ログイン</button>
+    <div class="mobile-face" id="mobile-face">
+      <img id="char-img-mobile" class="mobile-face-img" src="" alt="アリア">
+      <div class="mobile-face-info">
+        <div class="mobile-face-name">アリア</div>
+        <div class="mobile-face-mood" id="mood-text-mobile">通常</div>
+      </div>
+    </div>
     <button class="menu-btn" id="menu-btn" style="display:none" onclick="openDrawer()"><span></span><span></span><span></span></button>
   </div>
 
@@ -227,7 +240,7 @@ let driveFileId = null;
 let driveMemFileId = null;
 let isSyncing = false;
 
-['char-img','char-img-drawer'].forEach(id => {
+['char-img','char-img-drawer','char-img-mobile'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.src = IMG_NORMAL;
 });
@@ -276,11 +289,13 @@ function setMood(mood) {
     surprised: { src: IMG_SURPRISED, label: '驚き',    color: '#633806' },
   };
   const m = map[mood] || map.normal;
-  ['char-img','char-img-drawer'].forEach(id => {
+  ['char-img','char-img-drawer','char-img-mobile'].forEach(id => {
     const el = document.getElementById(id); if (el) el.src = m.src;
   });
   const pill = document.getElementById('mood-text');
   if (pill) { pill.textContent = m.label; pill.style.color = m.color; }
+  const moodMobile = document.getElementById('mood-text-mobile');
+  if (moodMobile) { moodMobile.textContent = m.label; moodMobile.style.color = m.color; }
 }
 
 function renderTasks() {
