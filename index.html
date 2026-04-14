@@ -435,7 +435,16 @@ function saveLocal() {
 function loadMemLocal() {
   try {
     const saved = localStorage.getItem(MEM_KEY);
-    if (saved) { const d = JSON.parse(saved); memory = d; driveMemFileId = d.driveMemFileId||null; }
+    if (saved) {
+      const d = JSON.parse(saved);
+      memory = {
+        tasks: d.tasks || [],
+        memo: d.memo || '',
+        aria_self: d.aria_self || '',
+        char_settings: d.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
+      };
+      driveMemFileId = d.driveMemFileId || null;
+    }
   } catch(e) {}
 }
 
@@ -645,11 +654,17 @@ async function loadMemFromDrive() {
       driveMemFileId = fid;
       const data = await driveRead(fid);
       if (data) {
-        memory = { tasks: data.tasks||[], memo: data.memo||'' };
+        memory = {
+          tasks: data.tasks || [],
+          memo: data.memo || '',
+          aria_self: data.aria_self || '',
+          char_settings: data.char_settings || memory.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
+        };
         saveMemLocal(); renderTasks(); renderMemo();
       }
     }
   } catch(e) {}
+}
 }
 
 async function saveToDrive() {
@@ -660,7 +675,7 @@ async function saveToDrive() {
     const trimHistory = history.slice(-MAX_STORE);
     const trimDisplay = displayLog.slice(-MAX_STORE);
     driveFileId = await driveWrite(driveFileId, DRIVE_CHAT_FILE, { history: trimHistory, displayLog: trimDisplay });
-    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo });
+    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo, aria_self: memory.aria_self||'', char_settings: memory.char_settings||{} });
     saveLocal(); saveMemLocal();
     setStatus('green', 'Drive同期済み — ' + fmt(Date.now()));
   } catch(e) { setStatus('red', 'Drive同期失敗'); }
@@ -690,9 +705,13 @@ function saveSettings() {
     backstory: document.getElementById('setting-backstory').value.trim(),
   };
   saveMemLocal();
-  if (accessToken) saveToDrive();
+  if (accessToken) {
+    saveToDrive();
+    showToast('キャラクター設定をDriveに保存しました');
+  } else {
+    showToast('設定を保存しました（Drive同期にはログインが必要です）');
+  }
   closeSettingsModal();
-  showToast('キャラクター設定を保存しました');
 }
 
 function openDevModal() {
