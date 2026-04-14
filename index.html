@@ -625,7 +625,7 @@ async function sendMsg() {
       return;
     }
     const raw = data.content?.[0]?.text || 'すみません、うまく返答できませんでした。';
-    const metaMatch = raw.match(/ARIA_META:(\{.*?\})/s);
+    const metaMatch = raw.match(/ARIA_META:(\{[\s\S]*?\})(?:\s*$|\n)/m);
     let mood = 'normal';
     if (metaMatch) {
       try {
@@ -642,8 +642,8 @@ async function sendMsg() {
         renderTasks(); renderMemo(); saveMemLocal();
       } catch(e) {}
     }
-    const clean = raw.replace(/\nARIA_META:\{.*?\}/s, '').trim();
-    history.push({ role:'assistant', content:raw });
+    const clean = raw.replace(/\n?ARIA_META:\{[\s\S]*?\}\s*$/m, '').trim();
+    history.push({ role:'assistant', content:clean });
     const replyTs = Date.now();
     displayLog.push({ role:'aria', text:clean, ts:replyTs });
     saveLocal(); updateCount();
