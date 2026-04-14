@@ -309,9 +309,9 @@ const SYSTEM_BASE = `あなたは「アリア」という名前のAIコンシェ
 返答の末尾に必ず以下のJSONブロックを付けてください（本文とは別行で）:
 ARIA_META:{"mood":"normal"|"happy"|"think"|"sorry"|"angry"|"surprised","tasks":[{"title":"タスク名","done":true|false,"urgent":true|false}],"memo":"ユーザーの重要情報（名前・好み・継続プロジェクトなど）","aria_self":"アリア自身のキャラクター情報（会話で生まれた設定・好み・ユーザーとの関係性など。なければ空文字）"}
 - moodは内容に応じて選ぶ: "normal"=通常, "happy"=うれしい・褒め・達成, "think"=考え中・調査, "sorry"=謝り・エラー・困り, "angry"=放置が長い・強い催促, "surprised"=驚き・予想外
-- tasksは会話から読み取れるタスク一覧。変化がなければ前回のリストをそのまま返す
-- memoはユーザーに関する記憶すべき情報。なければ空文字
-- aria_selfはアリア自身のキャラクターに関する情報。会話で新たに生まれた設定があれば追記。なければ空文字`;
+- tasksは会話から読み取れるタスク一覧。既存タスクは必ずタイトルを一字一句変えずにそのまま返すこと。新規タスクのみ追加する。変化がなければ空配列[]を返す
+- memoは今回の会話で初めて判明したユーザー情報のみ追記。既に知っている情報は絶対に返さない。新情報がなければ空文字
+- aria_selfは今回の会話で新たに生まれたアリア自身の設定のみ追記。既存情報は返さない。新情報がなければ空文字`;
 
 let history = [];
 let displayLog = [];
@@ -775,13 +775,43 @@ async function sendMsg() {
         const meta = JSON.parse(metaMatch[1]);
         mood = meta.mood || 'normal';
         if (meta.tasks && meta.tasks.length) {
+          const norm = s => s.replace(/[\s　。、・]/g, '').toLowerCase();
           meta.tasks.forEach(newTask => {
-            const idx = memory.tasks.findIndex(t => t.title === newTask.title);
+            const nNew = norm(newTask.title);
+            const idx = memory.tasks.findIndex(t =>
+              t.title === newTask.title ||
+              norm(t.title) === nNew ||
+              norm(t.title).includes(nNew) ||
+              nNew.includes(norm(t.title))
+            );
             if (idx >= 0) { memory.tasks[idx] = { ...memory.tasks[idx], ...newTask }; }
             else { memory.tasks.push(newTask); }
           });
         }
-        if (meta.memo) { memory.memo = (memory.memo ? memory.memo + '\n' : '') + meta.memo; }
+        if (meta.memo) {
+          const norm = s => s.replace(/[\s　。、・]/g, '').toLowerCase();
+          const newLines = meta.memo.split('\n').filter(line => {
+            if (!line.trim()) return false;
+            const nNew = norm(line);
+            return !memory.memo.split('\n').some(ex => {
+              const nEx = norm(ex);
+              return nEx === nNew || nEx.includes(nNew) || nNew.includes(nEx);
+            });
+          });
+          if (newLines.length) memory.memo = (memory.memo ? memory.memo + '\n' : '') + newLines.join('\n');
+        }
+        if (meta.aria_self) {
+          const norm = s => s.replace(/[\s　。、・]/g, '').toLowerCase();
+          const newLines = meta.aria_self.split('\n').filter(line => {
+            if (!line.trim()) return false;
+            const nNew = norm(line);
+            return !memory.aria_self.split('\n').some(ex => {
+              const nEx = norm(ex);
+              return nEx === nNew || nEx.includes(nNew) || nNew.includes(nEx);
+            });
+          });
+          if (newLines.length) memory.aria_self = (memory.aria_self ? memory.aria_self + '\n' : '') + newLines.join('\n');
+        }
         renderTasks(); renderMemo(); saveMemLocal();
       } catch(e) {}
     }
