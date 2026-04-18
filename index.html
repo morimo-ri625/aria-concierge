@@ -33,7 +33,9 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .task-item.done .task-check { background: #534AB7; border-color: #534AB7; }
 .task-item .task-check::after { content: ''; display: none; }
 .task-item.done .task-check::after { display: block; width: 5px; height: 3px; border-left: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(-45deg) translate(1px, -1px); }
-.task-urgent { color: #E24B4A; font-size: 9px; margin-left: auto; flex-shrink: 0; }
+.task-urgent { color: #E24B4A; font-size: 9px; flex-shrink: 0; }
+.task-delete { width: 14px; height: 14px; border-radius: 3px; border: none; background: none; color: #ccc; font-size: 13px; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; margin-left: auto; display: flex; align-items: center; justify-content: center; }
+.task-delete:hover { color: #E24B4A; background: #FCEBEB; border-radius: 3px; }
 .side-btn { width: 100%; font-size: 10px; color: #555; background: white; border: 1px solid #eee; border-radius: 6px; padding: 5px 6px; cursor: pointer; text-align: center; }
 .side-btn:hover { background: #f0effc; color: #3C3489; }
 .side-btn.danger { color: #A32D2D; border-color: #F7C1C1; }
@@ -256,11 +258,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
         <div class="dev-content" id="dev-tasks">—</div>
       </div>
       <div class="dev-section">
-        <div class="dev-section-title">ユーザーメモ</div>
+        <div class="dev-section-title" style="display:flex;align-items:center;justify-content:space-between;">ユーザーメモ<button onclick="clearMemo()" style="font-size:10px;color:#A32D2D;background:#FCEBEB;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">クリア</button></div>
         <div class="dev-content" id="dev-memo">—</div>
       </div>
       <div class="dev-section">
-        <div class="dev-section-title">アリアのキャラクター情報</div>
+        <div class="dev-section-title" style="display:flex;align-items:center;justify-content:space-between;">アリアのキャラクター情報<button onclick="clearAriaSelf()" style="font-size:10px;color:#A32D2D;background:#FCEBEB;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">クリア</button></div>
         <div class="dev-content" id="dev-aria-self">—</div>
       </div>
       <div class="dev-section">
@@ -382,8 +384,9 @@ function renderTasks() {
   memory.tasks.forEach((t, i) => {
     const div = document.createElement('div');
     div.className = 'task-item' + (t.done ? ' done' : '');
-    div.innerHTML = `<div class="task-check"></div><span style="flex:1;font-size:10px;">${t.title}</span>${t.urgent && !t.done ? '<span class="task-urgent">急</span>' : ''}`;
-    div.onclick = () => { memory.tasks[i].done = !memory.tasks[i].done; saveMemLocal(); renderTasks(); };
+    div.innerHTML = `<div class="task-check"></div><span style="flex:1;font-size:10px;">${t.title}</span>${t.urgent && !t.done ? '<span class="task-urgent">急</span>' : ''}<button class="task-delete" title="削除">×</button>`;
+    div.querySelector('.task-check').onclick = (e) => { e.stopPropagation(); memory.tasks[i].done = !memory.tasks[i].done; saveMemLocal(); renderTasks(); };
+    div.querySelector('.task-delete').onclick = (e) => { e.stopPropagation(); memory.tasks.splice(i, 1); saveMemLocal(); renderTasks(); if (accessToken) saveToDrive(); };
     list.appendChild(div);
     if (chips && !t.done) {
       const chip = document.createElement('div');
@@ -724,6 +727,24 @@ function closeDevModal() {
   document.getElementById('dev-modal').classList.remove('open');
 }
 
+function clearMemo() {
+  if (!confirm('ユーザーメモをクリアしますか？')) return;
+  memory.memo = '';
+  saveMemLocal(); renderMemo();
+  document.getElementById('dev-memo').textContent = '—';
+  if (accessToken) saveToDrive();
+  showToast('ユーザーメモをクリアしました');
+}
+
+function clearAriaSelf() {
+  if (!confirm('アリアのキャラクター情報をクリアしますか？')) return;
+  memory.aria_self = '';
+  saveMemLocal(); renderMemo();
+  document.getElementById('dev-aria-self').textContent = '—';
+  if (accessToken) saveToDrive();
+  showToast('アリアのキャラクター情報をクリアしました');
+}
+
 function clearHistory() {
   if (!confirm('会話の履歴をすべて消去しますか？')) return;
   history=[]; displayLog=[]; driveFileId=null;
@@ -779,6 +800,19 @@ async function sendMsg() {
       try {
         const meta = JSON.parse(metaMatch[1]);
         mood = meta.mood || 'normal';
+        if (meta.remove_tasks && meta.remove_tasks.length) {
+          const norm = s => s.replace(/[\s\u3000。、・]/g, '').toLowerCase();
+          meta.remove_tasks.forEach(title => {
+            const nDel = norm(title);
+            const idx = memory.tasks.findIndex(t =>
+              t.title === title ||
+              norm(t.title) === nDel ||
+              norm(t.title).includes(nDel) ||
+              nDel.includes(norm(t.title))
+            );
+            if (idx >= 0) memory.tasks.splice(idx, 1);
+          });
+        }
         if (meta.tasks && meta.tasks.length) {
           const norm = s => s.replace(/[\s　。、・]/g, '').toLowerCase();
           meta.tasks.forEach(newTask => {
