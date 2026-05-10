@@ -31,8 +31,17 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .mood-pill { font-size: 11px; color: #534AB7; background: #EEEDFE; border-radius: 20px; padding: 3px 10px; }
 .panel-section { width: 100%; }
 .panel-label { font-size: 10px; color: #aaa; margin-bottom: 5px; padding-left: 2px; }
-.task-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #333; background: white; border: 1px solid #eee; border-radius: 6px; padding: 5px 7px; margin-bottom: 4px; cursor: pointer; }
-.task-item.done { color: #aaa; text-decoration: line-through; }
+.task-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #333; background: white; border: 1px solid #eee; border-radius: 6px; padding: 5px 7px; margin-bottom: 4px; cursor: pointer; flex-wrap: wrap; }
+.task-item.done { color: #aaa; }
+.task-item.done .task-title { text-decoration: line-through; }
+.task-title { flex: 1; font-size: 10px; }
+.task-status-badge { font-size: 9px; border-radius: 3px; padding: 1px 5px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.task-status-badge.s-todo    { background: #F3F2F8; color: #777; }
+.task-status-badge.s-doing   { background: #FEF3E2; color: #854F0B; }
+.task-status-badge.s-done    { background: #E8F8F1; color: #0F6E56; }
+.task-due-badge { font-size: 9px; color: #E24B4A; white-space: nowrap; flex-shrink: 0; }
+.task-due-badge.overdue { font-weight: 700; }
+.task-meta-row { width: 100%; display: flex; align-items: center; gap: 5px; margin-top: 2px; padding-left: 17px; }
 .task-item .task-check { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid #AFA9EC; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .task-item.done .task-check { background: #534AB7; border-color: #534AB7; }
 .task-item .task-check::after { content: ''; display: none; }
@@ -274,7 +283,18 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .peek-log-time { font-size: 10px; color: #bbb; margin-top: 2px; }
 .peek-log-empty { font-size: 13px; color: #bbb; text-align: center; padding: 20px; }
 
-/* アリアの割り込みバナー */
+/* 祝日 */
+.cal-day.holiday .cal-day-num { color: #E24B4A; }
+.cal-holiday-label { font-size: 8px; color: #E24B4A; line-height: 1.2; margin-bottom: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-mini-cell.holiday { color: #E24B4A; }
+.cal-week-holiday-label { font-size: 8px; color: #E24B4A; }
+
+/* カレンダー月次グリーティング */
+.cal-greeting { display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: linear-gradient(135deg,#F0EFFC,#E8F8F4); border-bottom: 1px solid #E0DEFC; flex-shrink: 0; animation: peekIn 0.3s ease; }
+.cal-greeting-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: top; flex-shrink: 0; }
+.cal-greeting-text { font-size: 12px; color: #333; line-height: 1.6; flex: 1; }
+.cal-greeting-close { font-size: 14px; color: #bbb; background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
+.cal-greeting-close:hover { color: #888; }
 .aria-peek { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; background: linear-gradient(135deg, #F0EFFC 0%, #E8F8F4 100%); border-bottom: 1px solid #E0DEFC; flex-shrink: 0; animation: peekIn 0.3s ease; }
 @keyframes peekIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 .aria-peek-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
@@ -386,6 +406,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 
       <!-- カレンダーペイン -->
       <div class="tab-pane" id="pane-calendar">
+        <div class="cal-greeting" id="cal-greeting" style="display:none;">
+          <img class="cal-greeting-img" id="cal-greeting-img" src="" alt="アリア">
+          <div class="cal-greeting-text" id="cal-greeting-text"></div>
+          <button class="cal-greeting-close" onclick="document.getElementById('cal-greeting').style.display='none'">&#xD7;</button>
+        </div>
         <div class="cal-toolbar">
           <button class="cal-nav-btn" onclick="calNav(-1)">&#x2039;</button>
           <span class="cal-title" id="cal-title"></span>
@@ -614,14 +639,67 @@ function renderTasks() {
     return;
   }
   if (bar) bar.style.display = 'flex';
+  const STATUS_LABEL = { todo:'未着手', doing:'進行中', done:'完了' };
+  const STATUS_CLASS = { todo:'s-todo', doing:'s-doing', done:'s-done' };
+  const now = Date.now();
   memory.tasks.forEach((t, i) => {
+    const status = t.status || (t.done ? 'done' : 'todo');
+    const isDone = status === 'done' || t.done;
     const div = document.createElement('div');
-    div.className = 'task-item' + (t.done ? ' done' : '');
-    div.innerHTML = `<div class="task-check"></div><span style="flex:1;font-size:10px;">${t.title}</span>${t.urgent && !t.done ? '<span class="task-urgent">急</span>' : ''}<button class="task-delete" title="削除">×</button>`;
-    div.querySelector('.task-check').onclick = (e) => { e.stopPropagation(); memory.tasks[i].done = !memory.tasks[i].done; saveMemLocal(); renderTasks(); };
-    div.querySelector('.task-delete').onclick = (e) => { e.stopPropagation(); memory.tasks.splice(i, 1); saveMemLocal(); renderTasks(); if (accessToken) saveToDrive(); };
+    div.className = 'task-item' + (isDone ? ' done' : '');
+
+    // チェックボックス
+    const chk = document.createElement('div'); chk.className='task-check';
+    chk.onclick = (e) => {
+      e.stopPropagation();
+      const next = (status === 'done') ? 'todo' : (status === 'todo' ? 'doing' : 'done');
+      memory.tasks[i].status = next;
+      memory.tasks[i].done = (next === 'done');
+      saveMemLocal(); renderTasks();
+      if (accessToken) saveToDrive();
+    };
+    div.appendChild(chk);
+
+    // タイトル
+    const titleSpan = document.createElement('span'); titleSpan.className='task-title'; titleSpan.textContent = t.title;
+    div.appendChild(titleSpan);
+
+    if (t.urgent && !isDone) {
+      const urg = document.createElement('span'); urg.className='task-urgent'; urg.textContent='急'; div.appendChild(urg);
+    }
+
+    // 削除ボタン
+    const del = document.createElement('button'); del.className='task-delete'; del.title='削除'; del.textContent='×';
+    del.onclick = (e) => { e.stopPropagation(); memory.tasks.splice(i,1); saveMemLocal(); renderTasks(); if (accessToken) saveToDrive(); };
+    div.appendChild(del);
+
+    // ステータス・期限行
+    const meta = document.createElement('div'); meta.className='task-meta-row';
+    const sBadge = document.createElement('span');
+    sBadge.className = 'task-status-badge ' + (STATUS_CLASS[status]||'s-todo');
+    sBadge.textContent = STATUS_LABEL[status]||'未着手';
+    // ステータスクリックでサイクル
+    sBadge.onclick = (e) => {
+      e.stopPropagation();
+      const cycle = { todo:'doing', doing:'done', done:'todo' };
+      memory.tasks[i].status = cycle[status]||'todo';
+      memory.tasks[i].done = (memory.tasks[i].status === 'done');
+      saveMemLocal(); renderTasks(); if (accessToken) saveToDrive();
+    };
+    meta.appendChild(sBadge);
+
+    if (t.dueDate) {
+      const due = new Date(t.dueDate);
+      const isOver = !isDone && due.getTime() < now;
+      const dueBadge = document.createElement('span');
+      dueBadge.className = 'task-due-badge' + (isOver ? ' overdue' : '');
+      dueBadge.textContent = '📅 ' + (due.getMonth()+1) + '/' + due.getDate() + (isOver ? ' 期限超過' : '');
+      meta.appendChild(dueBadge);
+    }
+    div.appendChild(meta);
     list.appendChild(div);
-    if (chips && !t.done) {
+
+    if (chips && !isDone) {
       const chip = document.createElement('div');
       chip.className = 'task-chip' + (t.urgent ? ' urgent' : '');
       chip.textContent = t.title;
@@ -1002,6 +1080,197 @@ function clearHistory() {
   showToast('履歴を消去しました');
 }
 
+// ===== 日本の祝日データ (2025-2027) =====
+const JP_HOLIDAYS = {
+  '2025-1-1':'元日','2025-1-13':'成人の日','2025-2-11':'建国記念の日','2025-2-23':'天皇誕生日',
+  '2025-3-20':'春分の日','2025-4-29':'昭和の日','2025-5-3':'憲法記念日','2025-5-4':'みどりの日',
+  '2025-5-5':'こどもの日','2025-5-6':'振替休日','2025-7-21':'海の日','2025-8-11':'山の日',
+  '2025-9-15':'敬老の日','2025-9-23':'秋分の日','2025-10-13':'スポーツの日','2025-11-3':'文化の日',
+  '2025-11-23':'勤労感謝の日','2025-11-24':'振替休日',
+  '2026-1-1':'元日','2026-1-12':'成人の日','2026-2-11':'建国記念の日','2026-2-23':'天皇誕生日',
+  '2026-3-20':'春分の日','2026-4-29':'昭和の日','2026-5-3':'憲法記念日','2026-5-4':'みどりの日',
+  '2026-5-5':'こどもの日','2026-7-20':'海の日','2026-8-11':'山の日','2026-9-21':'敬老の日',
+  '2026-9-22':'国民の休日','2026-9-23':'秋分の日','2026-10-12':'スポーツの日','2026-11-3':'文化の日',
+  '2026-11-23':'勤労感謝の日',
+  '2027-1-1':'元日','2027-1-11':'成人の日','2027-2-11':'建国記念の日','2027-2-23':'天皇誕生日',
+  '2027-3-21':'春分の日','2027-4-29':'昭和の日','2027-5-3':'憲法記念日','2027-5-4':'みどりの日',
+  '2027-5-5':'こどもの日','2027-7-19':'海の日','2027-8-11':'山の日','2027-9-20':'敬老の日',
+  '2027-9-23':'秋分の日','2027-10-11':'スポーツの日','2027-11-3':'文化の日','2027-11-23':'勤労感謝の日',
+};
+
+function getHoliday(y, m, d) {
+  return JP_HOLIDAYS[y+'-'+m+'-'+d] || null;
+}
+
+// ===== 月次グリーティング (12ヶ月×10パターン) =====
+const CAL_GREETINGS = {
+  1: [
+    { text:'あけましておめでとうございます！新しい年の始まりですね。今年の目標、一緒に考えましょうか？', mood:'happy' },
+    { text:'1月は「睦月」。家族や大切な人と過ごす温かい季節ですね。初詣には行かれましたか？', mood:'normal' },
+    { text:'お正月明けでちょっとお疲れかもしれませんね。ゆっくりペースで今月を始めましょう！', mood:'sorry' },
+    { text:'新年！気持ちを新たにタスクを整理するのにぴったりな時期ですよ。', mood:'happy' },
+    { text:'1月は寒さが本番ですね。体調に気をつけて、温かくしてお過ごしください。', mood:'normal' },
+    { text:'年始のこの時期、やりたいことを書き出してみませんか？夢リストを作るのも素敵ですよ！', mood:'happy' },
+    { text:'「一年の計は元旦にあり」と言いますね。今年はどんな年にしたいですか？', mood:'think' },
+    { text:'お正月特番を見すぎて夜更かしした方はいませんか？そろそろ生活リズムを戻しましょう！', mood:'surprised' },
+    { text:'成人の日が近づいていますね。新成人の方々への祝福を込めて、清々しい1月を過ごしましょう。', mood:'happy' },
+    { text:'冬晴れの空が気持ちいい季節ですね。寒くても外に出ると気分がリフレッシュしますよ！', mood:'normal' },
+  ],
+  2: [
+    { text:'2月は「如月」。まだ寒いですが、梅の花がそっと咲き始める季節です。', mood:'normal' },
+    { text:'バレンタインデーが近いですね！チョコレートの準備はお済みですか？', mood:'happy' },
+    { text:'2月は一年で一番短い月。あっという間に過ぎてしまうので、やりたいことは早めに！', mood:'surprised' },
+    { text:'節分の季節ですね。鬼は外、福は内！今年も良いことがたくさんありますように。', mood:'happy' },
+    { text:'まだまだ寒い日が続きますが、春はもうすぐそこまで来ています。あと少しですよ！', mood:'normal' },
+    { text:'2月は受験シーズンですね。頑張っている方、応援していますよ！全力を出し切れますように。', mood:'happy' },
+    { text:'寒い朝、布団から出るのが辛い季節ですね。でも一度動き出すと意外と大丈夫ですよ！', mood:'sorry' },
+    { text:'バレンタインチョコ、自分へのご褒美に買ってみるのもアリですよ。頑張った自分を労いましょう！', mood:'happy' },
+    { text:'春一番が吹くのもこの頃。季節の変わり目は体調管理に気をつけてくださいね。', mood:'normal' },
+    { text:'冬の澄んだ空気の中で星空を眺めるのが好きなんです。この季節ならではの楽しみですよね。', mood:'normal' },
+  ],
+  3: [
+    { text:'3月は「弥生」。桜の開花が待ち遠しい季節になりましたね！', mood:'happy' },
+    { text:'ひな祭りの季節ですね。甘酒とひなあられ、いただきましたか？', mood:'happy' },
+    { text:'春分の日を境に、日が長くなっていきますよ。少しずつ春らしくなっていきますね。', mood:'normal' },
+    { text:'年度末で忙しい方も多いですよね。タスク管理、お手伝いしますよ！', mood:'think' },
+    { text:'卒業シーズンですね。別れと出会いの季節。素敵な思い出になりますように。', mood:'sorry' },
+    { text:'花粉症の季節でもありますね。くしゃみや目のかゆみ、辛そうですが気をつけて！', mood:'sorry' },
+    { text:'春の訪れと共に、新しいことを始めるのにぴったりの季節ですよ！', mood:'happy' },
+    { text:'お彼岸の時期ですね。ご先祖様への感謝を忘れずに。', mood:'normal' },
+    { text:'桜の開花予報が出始める頃ですね。お花見の計画、立ててみましょうか？', mood:'happy' },
+    { text:'3月は出会いと別れが交差する季節。感謝の気持ちを大切にしたいですね。', mood:'normal' },
+  ],
+  4: [
+    { text:'4月は「卯月」。桜の季節、お花見には行かれましたか？満開の桜は格別ですよね！', mood:'happy' },
+    { text:'新年度スタートですね！新しい環境、新しい目標、一緒に頑張りましょう！', mood:'happy' },
+    { text:'春爛漫の4月。新しい出会いがたくさんありそうですね。楽しみですよ！', mood:'happy' },
+    { text:'エイプリルフールの季節ですね。どんな嘘をつきますか？ユーモアは人生を豊かにします！', mood:'surprised' },
+    { text:'桜前線が北上している頃ですね。まだ咲いていない地域の方も、もうすぐですよ！', mood:'normal' },
+    { text:'新学期・新年度で緊張している方も多いですよね。最初はみんなそうですよ、大丈夫！', mood:'sorry' },
+    { text:'ゴールデンウィークまであとひと踏ん張りですね。連休の計画、楽しみながら考えましょう！', mood:'happy' },
+    { text:'春眠暁を覚えず…という季節ですね。気持ちのいい朝が続きますよ！', mood:'normal' },
+    { text:'4月の青空の下、外でお弁当を食べてみませんか？きっと美味しさが倍増しますよ！', mood:'happy' },
+    { text:'新しいスタートを切るのに最適な季節です。去年の自分を超えていきましょう！', mood:'happy' },
+  ],
+  5: [
+    { text:'5月は「皐月」。新緑が目に眩しい、気持ちのいい季節ですね！', mood:'happy' },
+    { text:'ゴールデンウィーク！どこかお出かけされましたか？良い休暇になりましたか？', mood:'happy' },
+    { text:'5月病には気をつけてください。無理せず、少しずつで大丈夫ですよ。', mood:'sorry' },
+    { text:'こどもの日ですね。子どもの頃の自分に負けないよう、夢を持って生きていきましょう！', mood:'happy' },
+    { text:'新緑の季節は外に出たくなりますね。少し遠くまで散歩してみるのもいいですよ！', mood:'normal' },
+    { text:'ゴールデンウィーク明けはちょっとブルーになりがちですよね。でも一歩一歩、大丈夫！', mood:'sorry' },
+    { text:'5月の風が気持ちいい季節ですね。窓を開けて深呼吸してみてください！', mood:'happy' },
+    { text:'母の日が近いですね！お母さんへの感謝、伝えましたか？', mood:'happy' },
+    { text:'過ごしやすい気候の今のうちに、やりたいことリストを消化していきましょう！', mood:'think' },
+    { text:'端午の節句ですね。こいのぼりが空を泳ぐ光景、いつ見ても素敵だと思います！', mood:'happy' },
+  ],
+  6: [
+    { text:'6月は「水無月」。雨の季節ですが、紫陽花が美しく咲く頃ですよ。', mood:'normal' },
+    { text:'梅雨入りしましたね。雨の日は家でのんびりする時間も大切にしましょう！', mood:'normal' },
+    { text:'ジメジメした天気が続きますが、こういう日こそ部屋の整理や読書の機会にしませんか？', mood:'think' },
+    { text:'紫陽花の季節ですね。雨に濡れた紫陽花、実はとても綺麗なんです。', mood:'happy' },
+    { text:'傘を忘れずに！でも急に晴れることもありますから、折りたたみ傘が安心ですよ。', mood:'normal' },
+    { text:'6月は結婚式も多い季節ですね。ジューンブライド、素敵な言葉だと思います！', mood:'happy' },
+    { text:'夏至が近づいています。一年で一番昼が長い日、何か特別なことをしてみませんか？', mood:'surprised' },
+    { text:'梅雨の合間の晴れた日は気持ちがいいですよね。積極的に外に出てみましょう！', mood:'happy' },
+    { text:'湿度が高い季節、食べ物の管理に気をつけてくださいね。体調管理も大切ですよ。', mood:'sorry' },
+    { text:'雨の音って、集中したい時のBGMにぴったりなんです。梅雨を活用してみては？', mood:'think' },
+  ],
+  7: [
+    { text:'7月は「文月」。夏本番がやってきましたね！元気よく過ごしましょう！', mood:'happy' },
+    { text:'七夕ですね！今年の願い事は何ですか？短冊に書いてみたいな。', mood:'happy' },
+    { text:'夏の暑さが本格的になってきましたね。熱中症対策、しっかりとしてくださいね！', mood:'sorry' },
+    { text:'海の日ですね！海に行く計画はありますか？夏の思い出、作りましょう！', mood:'happy' },
+    { text:'夏祭りの季節到来！お祭りの雰囲気、やっぱり特別ですよね。', mood:'happy' },
+    { text:'暑い日が続きますが、こまめに水分補給と休憩を忘れずに！', mood:'normal' },
+    { text:'花火大会の季節ですね！夜空に咲く花火、一緒に見に行きたいくらいです。', mood:'surprised' },
+    { text:'夏休みが始まる時期ですね。学生さんたちの喜ぶ顔が目に浮かびます！', mood:'happy' },
+    { text:'夏の朝は特別な清々しさがありますよ。早起きして朝の空気を感じてみてください。', mood:'normal' },
+    { text:'かき氷や冷たいスイーツが美味しい季節ですね。たまの甘いものも大事ですよ！', mood:'happy' },
+  ],
+  8: [
+    { text:'8月は「葉月」。お盆の季節、ご先祖様への感謝を込めて静かに過ごすのもいいですね。', mood:'normal' },
+    { text:'夏休み真っ只中ですね！宿題は計画的に進められていますか？お手伝いしますよ！', mood:'think' },
+    { text:'お盆で帰省される方も多いですね。懐かしい顔に会えるのが楽しみですね！', mood:'happy' },
+    { text:'猛暑が続きますね。外出は涼しい時間帯に、室内では適度な冷房を使いましょう！', mood:'sorry' },
+    { text:'夏の終わりが近づいていますね。夏にやり残したことはありませんか？', mood:'normal' },
+    { text:'山の日ですね！山登りや自然の中でのリフレッシュ、いかがでしょうか？', mood:'happy' },
+    { text:'夏の夜は星が綺麗ですよね。天の川が見えるような場所に行ってみたいです。', mood:'happy' },
+    { text:'暑さに負けず、水分補給をしっかりして元気に乗り切りましょう！応援しています。', mood:'normal' },
+    { text:'夏の思い出、どんなことがありましたか？日記に書き留めておくといいですよ！', mood:'happy' },
+    { text:'8月末、夏の疲れが出てくる頃ですね。ゆっくり休んで英気を養いましょう！', mood:'sorry' },
+  ],
+  9: [
+    { text:'9月は「長月」。少しずつ秋の気配が漂い始める季節ですね。', mood:'normal' },
+    { text:'お月見の季節ですね！十五夜の満月、一緒に眺めたいくらい綺麗ですよ！', mood:'happy' },
+    { text:'残暑がまだ厳しい日もありますが、朝晩は涼しくなってきましたね。', mood:'normal' },
+    { text:'敬老の日ですね。おじいちゃん、おばあちゃんへの感謝を伝えましょう！', mood:'happy' },
+    { text:'秋分の日を境に、だんだん夜が長くなっていきます。秋の夜長を楽しみましょう！', mood:'normal' },
+    { text:'食欲の秋がやってきましたね！美味しいものがたくさんある季節、楽しみです。', mood:'happy' },
+    { text:'スポーツの秋でもありますよ。運動習慣をつけるのに最適な時期ですよ！', mood:'happy' },
+    { text:'秋空は高くて澄んでいますね。深呼吸するだけで気持ちよくなれる季節です。', mood:'normal' },
+    { text:'読書の秋！本を読むのに最高の季節ですよ。何か気になる本はありますか？', mood:'think' },
+    { text:'秋の夕暮れは特別な美しさがありますよね。少し立ち止まって眺めてみませんか？', mood:'normal' },
+  ],
+  10: [
+    { text:'10月は「神無月」。秋も深まって、過ごしやすい気候になりましたね！', mood:'happy' },
+    { text:'スポーツの日がありますね！体を動かして秋の爽やかな空気を満喫しましょう！', mood:'happy' },
+    { text:'ハロウィンの季節ですね！仮装やお菓子で楽しい思い出を作りましょう！', mood:'surprised' },
+    { text:'紅葉が始まる頃ですね。色づく山々、見に行く計画を立ててみませんか？', mood:'happy' },
+    { text:'芸術の秋！美術館や音楽会に足を運んでみてはいかがですか？', mood:'normal' },
+    { text:'天高く馬肥ゆる秋！美味しいものをたくさん食べて、元気に過ごしましょう！', mood:'happy' },
+    { text:'10月は行楽シーズンでもありますね。どこかお出かけの計画はありますか？', mood:'happy' },
+    { text:'だんだん日が短くなってきましたね。早めに帰宅して、ゆっくりする時間を大切に。', mood:'normal' },
+    { text:'秋の夜長、映画鑑賞や読書はいかがですか？お気に入りの作品、聞かせてください！', mood:'think' },
+    { text:'ハロウィンの飾り付け、可愛いですよね！こういう季節のイベント、大好きです。', mood:'happy' },
+  ],
+  11: [
+    { text:'11月は「霜月」。木々が色づき、秋の深まりを感じる季節ですね。', mood:'normal' },
+    { text:'文化の日ですね！芸術や文化に触れる機会を作ってみませんか？', mood:'happy' },
+    { text:'勤労感謝の日！毎日お仕事お疲れ様です。感謝の気持ちを忘れずにいたいですね。', mood:'happy' },
+    { text:'紅葉が見頃を迎える頃ですね！美しい秋の景色、ぜひ楽しんでください。', mood:'happy' },
+    { text:'朝晩がかなり冷えてきましたね。温かい服装で、体調管理に気をつけましょう。', mood:'sorry' },
+    { text:'七五三の季節ですね！子どもたちの晴れ姿、微笑ましいですよね。', mood:'happy' },
+    { text:'鍋料理が美味しくなる季節ですね！体が温まる料理、何がお好きですか？', mood:'happy' },
+    { text:'年末に向けて、やり残していることはありませんか？今から少しずつ片付けましょう！', mood:'think' },
+    { text:'落ち葉の季節ですね。落ち葉を踏む音、なんとも言えない風情がありますよね。', mood:'normal' },
+    { text:'11月は1年の終わりが近づいてくる季節。今年の振り返りをする良い機会ですよ！', mood:'think' },
+  ],
+  12: [
+    { text:'12月は「師走」。年の瀬に向けて、慌ただしくなってきましたね！', mood:'surprised' },
+    { text:'クリスマスが近づいていますね！今年のプレゼント、もう決まりましたか？', mood:'happy' },
+    { text:'大掃除の季節ですね。不要なものを整理して、スッキリした気持ちで新年を迎えましょう！', mood:'think' },
+    { text:'忘年会シーズンですね！楽しい思い出をたくさん作りましょう。でも飲み過ぎには注意ですよ！', mood:'happy' },
+    { text:'冬至ですね！一年で一番夜が長い日。ゆず湯で体を温めましょう！', mood:'normal' },
+    { text:'もうすぐ年末ですね。今年はどんな年でしたか？振り返りを一緒にしませんか？', mood:'think' },
+    { text:'クリスマスイブですね！素敵な夜をお過ごしください。一人でも、みんなでも最高ですよ！', mood:'happy' },
+    { text:'12月の夜空は澄んでいて、星が綺麗に見えますよ。たまには夜空を見上げてみてください。', mood:'normal' },
+    { text:'年賀状の準備はお済みですか？大切な人への一言、丁寧に書きたいですよね。', mood:'normal' },
+    { text:'もうすぐ新年！今年一年、本当にお疲れ様でした。来年も一緒に頑張りましょうね！', mood:'happy' },
+  ],
+};
+
+let lastGreetingMonth = -1;
+
+function showCalGreeting() {
+  const m = calAnchor.getMonth() + 1;
+  const patterns = CAL_GREETINGS[m];
+  if (!patterns) return;
+  const pick = patterns[Math.floor(Math.random() * patterns.length)];
+  const moodMap = {
+    normal: IMG_NORMAL, happy: IMG_HAPPY, think: IMG_THINK,
+    sorry: IMG_SORRY, surprised: IMG_SURPRISED, angry: IMG_ANGRY
+  };
+  const el = document.getElementById('cal-greeting');
+  const img = document.getElementById('cal-greeting-img');
+  const txt = document.getElementById('cal-greeting-text');
+  if (!el) return;
+  img.src = moodMap[pick.mood] || IMG_NORMAL;
+  txt.textContent = pick.text;
+  el.style.display = 'flex';
+  setMood(pick.mood);
+}
+
 // ===== タブ切り替え =====
 let currentTab = 'notepad';
 function switchTab(tab) {
@@ -1011,7 +1280,7 @@ function switchTab(tab) {
     document.getElementById('tab-' + t).classList.toggle('active', t === tab);
   });
   if (tab === 'notepad') { renderNotepad(); maybeAriaPeek(); }
-  if (tab === 'calendar') renderCalendar();
+  if (tab === 'calendar') { renderCalendar(); showCalGreeting(); }
 }
 
 // ===== メモ帳 =====
@@ -1055,6 +1324,33 @@ function renderNotepad() {
     const dateStr = fmtNoteDate(note.ts);
     const bodyText = note.text || '';
     const isLong = bodyText.length > 120;
+
+    // タスクカテゴリの場合、memory.tasksから対応するタスクを探して追加情報を表示
+    let taskMeta = '';
+    if (note.category === 'task') {
+      const normText = (s) => s.replace(/[\s　。、・]/g,'').toLowerCase();
+      const matched = (memory.tasks||[]).find(t => {
+        const nt = normText(t.title), nb = normText(bodyText);
+        return nt === nb || nt.includes(nb) || nb.includes(nt);
+      });
+      if (matched) {
+        const STATUS_LABEL = { todo:'未着手', doing:'進行中', done:'完了' };
+        const STATUS_CLASS = { todo:'s-todo', doing:'s-doing', done:'s-done' };
+        const st = matched.status || (matched.done ? 'done' : 'todo');
+        const stClass = STATUS_CLASS[st]||'s-todo';
+        const stLabel = STATUS_LABEL[st]||'未着手';
+        const now = Date.now();
+        let dueHtml = '';
+        if (matched.dueDate) {
+          const due = new Date(matched.dueDate);
+          const isOver = st !== 'done' && due.getTime() < now;
+          dueHtml = `<span class="task-due-badge${isOver?' overdue':''}" style="font-size:10px;">📅 ${due.getMonth()+1}/${due.getDate()}${isOver?' 期限超過':''}</span>`;
+        }
+        taskMeta = `<div style="display:flex;gap:5px;align-items:center;margin-top:4px;flex-wrap:wrap;">
+          <span class="task-status-badge ${stClass}" style="cursor:pointer;" data-noteid="${note.id}">${stLabel}</span>${dueHtml}</div>`;
+      }
+    }
+
     card.innerHTML = `
       <div class="note-card-header">
         <span class="note-cat-tag ${catClass}">${catLabel}</span>
@@ -1065,7 +1361,29 @@ function renderNotepad() {
         </div>
       </div>
       <div class="note-body${isLong ? ' truncated' : ''}" data-noteid="${note.id}">${escHtml(bodyText)}</div>
+      ${taskMeta}
     `;
+
+    // 進捗バッジクリックでサイクル
+    const stBadge = card.querySelector('.task-status-badge[data-noteid]');
+    if (stBadge) {
+      stBadge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const normText = (s) => s.replace(/[\s　。、・]/g,'').toLowerCase();
+        const nb = normText(bodyText);
+        const idx = (memory.tasks||[]).findIndex(t => {
+          const nt = normText(t.title);
+          return nt === nb || nt.includes(nb) || nb.includes(nt);
+        });
+        if (idx >= 0) {
+          const cur = memory.tasks[idx].status || (memory.tasks[idx].done ? 'done' : 'todo');
+          const cycle = { todo:'doing', doing:'done', done:'todo' };
+          memory.tasks[idx].status = cycle[cur]||'todo';
+          memory.tasks[idx].done = (memory.tasks[idx].status === 'done');
+          saveMemLocal(); renderTasks(); renderNotepad(); if (accessToken) saveToDrive();
+        }
+      });
+    }
     // 長文折りたたみ
     if (isLong) {
       card.querySelector('.note-body').addEventListener('click', function() {
@@ -1466,10 +1784,15 @@ function renderCalMonth(body) {
     const isToday = date.getTime() === today.getTime();
     const key = y + '-' + (m+1) + '-' + day;
     const events = eventMap[key] || [];
+    const holiday = getHoliday(y, m+1, day);
     const cell = document.createElement('div');
-    cell.className = 'cal-day' + (isToday ? ' today' : '');
+    cell.className = 'cal-day' + (isToday ? ' today' : '') + (holiday ? ' holiday' : '');
     const numDiv = document.createElement('div'); numDiv.className='cal-day-num'; numDiv.textContent=day;
     cell.appendChild(numDiv);
+    if (holiday) {
+      const hl = document.createElement('div'); hl.className='cal-holiday-label'; hl.textContent=holiday;
+      cell.appendChild(hl);
+    }
     events.slice(0,3).forEach(ev => {
       const evEl = document.createElement('div');
       evEl.className = `cal-event cat-${ev.category}`;
@@ -1520,8 +1843,9 @@ function renderCalYear(body) {
       const key = y + '-' + (m+1) + '-' + d;
       const hasEv = !!(eventMap[key] && eventMap[key].length);
       const isTd = (y===today.getFullYear() && m===today.getMonth() && d===today.getDate());
+      const hasHol = !!getHoliday(y, m+1, d);
       const c = document.createElement('div');
-      c.className = 'cal-mini-cell' + (hasEv?' has-event':'') + (isTd?' today':'');
+      c.className = 'cal-mini-cell' + (hasEv?' has-event':'') + (isTd?' today':'') + (hasHol?' holiday':'');
       c.textContent = d;
       if (hasEv) { const evs=eventMap[key]; c.onclick=(e)=>{e.stopPropagation();openCalDetail(evs[0].id);}; c.style.cursor='pointer'; }
       mgrid.appendChild(c);
@@ -1548,8 +1872,9 @@ function renderCalWeek(body) {
   const emptyH = document.createElement('div'); emptyH.className='cal-week-header-cell'; header.appendChild(emptyH);
   weekDays.forEach((d,i) => {
     const isT = d.getTime()===today.getTime();
-    const c = document.createElement('div'); c.className='cal-week-header-cell'+(isT?' today-col':'');
-    c.innerHTML = DAYS[i]+'<br><span style="font-size:11px;font-weight:'+(isT?700:400)+'">'+d.getDate()+'</span>';
+    const hol = getHoliday(d.getFullYear(), d.getMonth()+1, d.getDate());
+    const c = document.createElement('div'); c.className='cal-week-header-cell'+(isT?' today-col':'')+(hol?' holiday':'');
+    c.innerHTML = DAYS[i]+'<br><span style="font-size:11px;font-weight:'+(isT?700:400)+'">'+d.getDate()+'</span>'+(hol?`<br><span class="cal-week-holiday-label">${hol}</span>`:'');
     header.appendChild(c);
   });
   wrap.appendChild(header);
