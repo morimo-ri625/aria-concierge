@@ -175,6 +175,40 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .note-cat-tag.cat-idea    { background: #E8F0FE; color: #1A5299; }
 .note-cat-tag.cat-memo    { background: #F3F2F8; color: #555; }
 .note-cat-tag.cat-other   { background: #F3F2F8; color: #666; }
+.note-cat-tag.cat-schedule{ background: #E8F4FE; color: #0A6EBD; }
+
+/* メモ入力フォーム */
+.note-input-form { display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-top: 1px solid #eee; flex-shrink: 0; }
+.note-input-cat-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.note-cat-pick-btn { font-size: 11px; border-radius: 12px; border: 1px solid #ddd; background: #faf9f7; color: #666; padding: 3px 9px; cursor: pointer; transition: all 0.12s; }
+.note-cat-pick-btn:hover { border-color: #AFA9EC; color: #534AB7; background: #EEEDFE; }
+.note-cat-pick-btn.selected { font-weight: 600; }
+.note-cat-pick-btn.selected[data-cat="task"]    { background:#EEEDFE; color:#534AB7; border-color:#AFA9EC; }
+.note-cat-pick-btn.selected[data-cat="schedule"]{ background:#E8F4FE; color:#0A6EBD; border-color:#7BB8E8; }
+.note-cat-pick-btn.selected[data-cat="shopping"]{ background:#E8F8F1; color:#0F6E56; border-color:#7BC7A8; }
+.note-cat-pick-btn.selected[data-cat="diary"]   { background:#FEF3E2; color:#854F0B; border-color:#D4A96A; }
+.note-cat-pick-btn.selected[data-cat="idea"]    { background:#E8F0FE; color:#1A5299; border-color:#7BA8D4; }
+.note-cat-pick-btn.selected[data-cat="memo"]    { background:#F3F2F8; color:#555; border-color:#bbb; }
+.note-input-main-row { display: flex; gap: 6px; align-items: flex-end; }
+.note-input-extra { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.note-input-extra label { font-size: 11px; color: #888; white-space: nowrap; }
+.note-input-extra input[type="date"], .note-input-extra input[type="text"], .note-input-extra select {
+  font-size: 11px; border: 1px solid #ddd; border-radius: 6px; padding: 3px 6px; color: #333; background: white; font-family: sans-serif; }
+.note-input-extra input:focus, .note-input-extra select:focus { outline: none; border-color: #7F77DD; }
+
+/* タスク専用編集欄 */
+.task-edit-panel { background: #faf9ff; border: 1px solid #E0DEFC; border-radius: 8px; padding: 8px 10px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.task-edit-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.task-edit-label { font-size: 11px; color: #888; white-space: nowrap; min-width: 44px; }
+.task-edit-select { font-size: 11px; border: 1px solid #ddd; border-radius: 6px; padding: 3px 6px; color: #333; background: white; font-family: sans-serif; cursor: pointer; }
+.task-edit-select:focus { outline: none; border-color: #7F77DD; }
+.task-edit-date { font-size: 11px; border: 1px solid #ddd; border-radius: 6px; padding: 3px 6px; color: #333; background: white; font-family: sans-serif; }
+.task-edit-date:focus { outline: none; border-color: #7F77DD; }
+.task-edit-save { font-size: 11px; color: white; background: #534AB7; border: none; border-radius: 6px; padding: 4px 12px; cursor: pointer; margin-left: auto; }
+.task-edit-save:hover { background: #3C3489; }
+
+/* 予定日バッジ */
+.schedule-date-badge { font-size: 10px; color: #0A6EBD; background: #E8F4FE; border-radius: 4px; padding: 1px 6px; display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
 .note-date-text { font-size: 10px; color: #bbb; margin-left: auto; }
 .note-actions { display: none; gap: 2px; flex-shrink: 0; }
 .note-card:hover .note-actions { display: flex; }
@@ -231,6 +265,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .cal-event.cat-diary { background: #FEF3E2; color: #854F0B; }
 .cal-event.cat-shopping { background: #E8F8F1; color: #0F6E56; }
 .cal-event.cat-idea { background: #E8F0FE; color: #1A5299; }
+.cal-event.cat-schedule { background: #E8F4FE; color: #0A6EBD; }
 .cal-event.cat-memo { background: #F3F2F8; color: #555; }
 /* カレンダー詳細モーダル */
 .cal-detail-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -388,6 +423,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
           <div class="notepad-toolbar-left" id="note-filter-btns">
             <button class="notepad-filter-btn active" data-cat="all" onclick="setNoteFilter('all')">すべて</button>
             <button class="notepad-filter-btn" data-cat="task" onclick="setNoteFilter('task')">タスク</button>
+            <button class="notepad-filter-btn" data-cat="schedule" onclick="setNoteFilter('schedule')">予定</button>
             <button class="notepad-filter-btn" data-cat="shopping" onclick="setNoteFilter('shopping')">買い物</button>
             <button class="notepad-filter-btn" data-cat="diary" onclick="setNoteFilter('diary')">日記</button>
             <button class="notepad-filter-btn" data-cat="idea" onclick="setNoteFilter('idea')">アイデア</button>
@@ -398,9 +434,37 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
           <button class="notepad-sort-btn" id="peek-log-btn" onclick="openPeekLog()" title="つぶやきログ" style="margin-left:2px;">&#x1F4DC;</button>
         </div>
         <div class="notepad-list" id="notepad-list"></div>
-        <div class="notepad-input-row">
-          <textarea id="note-input" placeholder="なんでも書いてね。タスク、買い物メモ、日記... AIが自動で分類します。"></textarea>
-          <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
+        <div class="note-input-form">
+          <!-- カテゴリ選択 -->
+          <div class="note-input-cat-row" id="note-cat-row">
+            <span style="font-size:10px;color:#aaa;flex-shrink:0;">分類：</span>
+            <button class="note-cat-pick-btn selected" data-cat="memo" onclick="selectNoteCat('memo')">メモ</button>
+            <button class="note-cat-pick-btn" data-cat="task" onclick="selectNoteCat('task')">タスク</button>
+            <button class="note-cat-pick-btn" data-cat="schedule" onclick="selectNoteCat('schedule')">予定</button>
+            <button class="note-cat-pick-btn" data-cat="shopping" onclick="selectNoteCat('shopping')">買い物</button>
+            <button class="note-cat-pick-btn" data-cat="diary" onclick="selectNoteCat('diary')">日記</button>
+            <button class="note-cat-pick-btn" data-cat="idea" onclick="selectNoteCat('idea')">アイデア</button>
+          </div>
+          <!-- カテゴリ別追加入力（予定日・締め切り・ステータス） -->
+          <div class="note-input-extra" id="note-extra-schedule" style="display:none;">
+            <label>予定日：</label>
+            <input type="date" id="note-schedule-date">
+          </div>
+          <div class="note-input-extra" id="note-extra-task" style="display:none;">
+            <label>締め切り：</label>
+            <input type="date" id="note-task-due">
+            <label style="margin-left:6px;">進捗：</label>
+            <select id="note-task-status">
+              <option value="todo">未着手</option>
+              <option value="doing">進行中</option>
+              <option value="done">完了</option>
+            </select>
+          </div>
+          <!-- テキスト入力と追加ボタン -->
+          <div class="note-input-main-row">
+            <textarea id="note-input" placeholder="内容を入力..." style="flex:1;font-size:13px;padding:8px 10px;border-radius:10px;border:1px solid #ddd;background:white;color:#222;resize:none;height:52px;font-family:sans-serif;line-height:1.6;"></textarea>
+            <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
+          </div>
         </div>
       </div>
 
@@ -825,7 +889,7 @@ function renderAll() {
     const d = fmtDate(item.ts);
     if (d !== lastDate) { const s=document.createElement('div'); s.className='day-sep'; s.textContent=d; log.appendChild(s); lastDate=d; }
     // 過去ログにARIA_METAが残っていた場合も除去
-    const cleanText = (item.text || '').replace(/\n?ARIA_META:\{[\s\S]*?\}/g, '').trim();
+    const cleanText = (item.text || '').replace(/\n?ARIA_META:[\s\S]*/g, '').trim();
     appendMsgEl(item.role, cleanText, item.ts);
   });
   log.scrollTop = log.scrollHeight;
@@ -1334,7 +1398,7 @@ let noteSort = 'desc'; // desc=新しい順, asc=古い順
 let ariaPeekTimeout = null;
 let lastPeekTime = 0;
 
-const CAT_LABELS = { task:'タスク', shopping:'買い物', diary:'日記', idea:'アイデア', memo:'メモ', other:'その他' };
+const CAT_LABELS = { task:'タスク', schedule:'予定', shopping:'買い物', diary:'日記', idea:'アイデア', memo:'メモ', other:'その他' };
 
 function setNoteFilter(cat) {
   noteFilter = cat;
@@ -1353,9 +1417,7 @@ function renderNotepad() {
   if (!list) return;
   list.innerHTML = '';
   let notes = (memory.notes || []).slice();
-  // フィルター
   if (noteFilter !== 'all') notes = notes.filter(n => n.category === noteFilter);
-  // ソート
   notes.sort((a, b) => noteSort === 'desc' ? b.ts - a.ts : a.ts - b.ts);
   if (!notes.length) {
     list.innerHTML = '<div class="notepad-empty">メモがありません。<br>下の入力欄からなんでも書いてみてください。</div>';
@@ -1364,138 +1426,178 @@ function renderNotepad() {
   notes.forEach(note => {
     const card = document.createElement('div');
     card.className = 'note-card';
-    const catClass = 'cat-' + (note.category || 'other');
-    const catLabel = CAT_LABELS[note.category] || 'その他';
+    const cat = note.category || 'memo';
+    const catClass = 'cat-' + cat;
+    const catLabel = CAT_LABELS[cat] || 'その他';
     const dateStr = fmtNoteDate(note.ts);
     const bodyText = note.text || '';
     const isLong = bodyText.length > 120;
 
-    // タスクカテゴリの場合、memory.tasksから対応するタスクを探して追加情報を表示
-    let taskMeta = '';
-    if (note.category === 'task') {
-      const normText = (s) => s.replace(/[\s　。、・]/g,'').toLowerCase();
-      const matched = (memory.tasks||[]).find(t => {
-        const nt = normText(t.title), nb = normText(bodyText);
-        return nt === nb || nt.includes(nb) || nb.includes(nt);
-      });
-      if (matched) {
-        const STATUS_LABEL = { todo:'未着手', doing:'進行中', done:'完了' };
-        const STATUS_CLASS = { todo:'s-todo', doing:'s-doing', done:'s-done' };
-        const st = matched.status || (matched.done ? 'done' : 'todo');
-        const stClass = STATUS_CLASS[st]||'s-todo';
-        const stLabel = STATUS_LABEL[st]||'未着手';
-        const now = Date.now();
-        let dueHtml = '';
-        if (matched.dueDate) {
-          const due = new Date(matched.dueDate);
-          const isOver = st !== 'done' && due.getTime() < now;
-          dueHtml = `<span class="task-due-badge${isOver?' overdue':''}" style="font-size:10px;">📅 ${due.getMonth()+1}/${due.getDate()}${isOver?' 期限超過':''}</span>`;
-        }
-        taskMeta = `<div style="display:flex;gap:5px;align-items:center;margin-top:4px;flex-wrap:wrap;">
-          <span class="task-status-badge ${stClass}" style="cursor:pointer;" data-noteid="${note.id}">${stLabel}</span>${dueHtml}</div>`;
-      }
-    }
+    // ヘッダー
+    const header = document.createElement('div'); header.className = 'note-card-header';
+    const catTag = document.createElement('span'); catTag.className = 'note-cat-tag ' + catClass; catTag.textContent = catLabel;
 
-    card.innerHTML = `
-      <div class="note-card-header">
-        <span class="note-cat-tag ${catClass}">${catLabel}</span>
-        <span class="note-date-text">${dateStr}</span>
-        <div class="note-actions">
-          <button class="note-edit-btn" title="編集">&#x270E;</button>
-          <button class="note-delete-btn" title="削除">&#xD7;</button>
-        </div>
-      </div>
-      <div class="note-body${isLong ? ' truncated' : ''}" data-noteid="${note.id}">${escHtml(bodyText)}</div>
-      ${taskMeta}
-    `;
-
-    // 進捗バッジクリックでサイクル
-    const stBadge = card.querySelector('.task-status-badge[data-noteid]');
-    if (stBadge) {
-      stBadge.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const normText = (s) => s.replace(/[\s　。、・]/g,'').toLowerCase();
-        const nb = normText(bodyText);
-        const idx = (memory.tasks||[]).findIndex(t => {
-          const nt = normText(t.title);
-          return nt === nb || nt.includes(nb) || nb.includes(nt);
-        });
-        if (idx >= 0) {
-          const cur = memory.tasks[idx].status || (memory.tasks[idx].done ? 'done' : 'todo');
-          const cycle = { todo:'doing', doing:'done', done:'todo' };
-          memory.tasks[idx].status = cycle[cur]||'todo';
-          memory.tasks[idx].done = (memory.tasks[idx].status === 'done');
-          saveMemLocal(); renderTasks(); renderNotepad(); if (accessToken) saveToDrive();
-        }
-      });
-    }
-    // 長文折りたたみ
-    if (isLong) {
-      card.querySelector('.note-body').addEventListener('click', function() {
-        if (!card.querySelector('.note-edit-area')) this.classList.toggle('truncated');
-      });
-    }
-    // 編集ボタン
-    card.querySelector('.note-edit-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      startNoteEdit(card, note);
+    // カテゴリ変更セレクト（ヘッダー内）
+    const catSel = document.createElement('select');
+    catSel.style.cssText = 'font-size:10px;border:1px solid #ddd;border-radius:5px;padding:1px 4px;color:#555;background:white;cursor:pointer;';
+    Object.entries(CAT_LABELS).filter(([k])=>k!=='other').forEach(([k,v]) => {
+      const opt = document.createElement('option'); opt.value=k; opt.textContent=v;
+      if (k===cat) opt.selected=true;
+      catSel.appendChild(opt);
     });
+    catSel.style.display = 'none'; // 初期非表示、編集モード時に表示
+    catTag.style.cursor = 'pointer';
+    catTag.onclick = () => { catSel.style.display = catSel.style.display==='none'?'':'none'; };
+    catSel.onchange = () => {
+      const idx = memory.notes.findIndex(n=>n.id===note.id);
+      if (idx>=0) { memory.notes[idx].category = catSel.value; saveMemLocal(); renderNotepad(); if(accessToken) saveToDrive(); }
+    };
+
+    const dateText = document.createElement('span'); dateText.className='note-date-text'; dateText.textContent=dateStr;
+    const actions = document.createElement('div'); actions.className='note-actions';
+    const editBtn = document.createElement('button'); editBtn.className='note-edit-btn'; editBtn.title='編集'; editBtn.innerHTML='&#x270E;';
+    const delBtn = document.createElement('button'); delBtn.className='note-delete-btn'; delBtn.title='削除'; delBtn.innerHTML='&#xD7;';
+    actions.appendChild(editBtn); actions.appendChild(delBtn);
+    header.appendChild(catTag); header.appendChild(catSel); header.appendChild(dateText); header.appendChild(actions);
+    card.appendChild(header);
+
+    // 本文
+    const body = document.createElement('div');
+    body.className = 'note-body' + (isLong ? ' truncated' : '');
+    body.textContent = bodyText;
+    if (isLong) body.addEventListener('click', function() { if (!card.querySelector('.note-edit-area')) this.classList.toggle('truncated'); });
+    card.appendChild(body);
+
+    // 予定カテゴリ：予定日表示
+    if (cat === 'schedule' && note.scheduleDate) {
+      const sd = new Date(note.scheduleDate);
+      const badge = document.createElement('div'); badge.className='schedule-date-badge';
+      badge.innerHTML = '&#x1F4C5; ' + (sd.getMonth()+1) + '月' + sd.getDate() + '日';
+      card.appendChild(badge);
+    }
+
+    // タスクカテゴリ：専用編集パネル
+    if (cat === 'task') {
+      const normText = s => s.replace(/[\s　。、・]/g,'').toLowerCase();
+      const nb = normText(bodyText);
+      const taskIdx = (memory.tasks||[]).findIndex(t => {
+        const nt = normText(t.title); return nt===nb||nt.includes(nb)||nb.includes(nt);
+      });
+      const task = taskIdx >= 0 ? memory.tasks[taskIdx] : null;
+      const STATUS_LABEL = { todo:'未着手', doing:'進行中', done:'完了' };
+      const STATUS_CLASS  = { todo:'s-todo', doing:'s-doing', done:'s-done' };
+      const st = task ? (task.status||(task.done?'done':'todo')) : 'todo';
+      const now = Date.now();
+
+      const panel = document.createElement('div'); panel.className='task-edit-panel';
+
+      // ステータス行
+      const stRow = document.createElement('div'); stRow.className='task-edit-row';
+      const stLabel = document.createElement('span'); stLabel.className='task-edit-label'; stLabel.textContent='進捗：';
+      const stSel = document.createElement('select'); stSel.className='task-edit-select';
+      ['todo','doing','done'].forEach(s => {
+        const o=document.createElement('option'); o.value=s; o.textContent=STATUS_LABEL[s]; if(s===st) o.selected=true; stSel.appendChild(o);
+      });
+      stRow.appendChild(stLabel); stRow.appendChild(stSel);
+
+      // 締め切り行
+      const dueRow = document.createElement('div'); dueRow.className='task-edit-row';
+      const dueLabel = document.createElement('span'); dueLabel.className='task-edit-label'; dueLabel.textContent='締め切り：';
+      const dueInp = document.createElement('input'); dueInp.type='date'; dueInp.className='task-edit-date';
+      if (task?.dueDate) dueInp.value = task.dueDate.slice(0,10);
+      // 期限超過表示
+      if (task?.dueDate && st!=='done') {
+        const due = new Date(task.dueDate);
+        if (due.getTime() < now) {
+          const overBadge = document.createElement('span');
+          overBadge.style.cssText='font-size:10px;color:#E24B4A;font-weight:700;';
+          overBadge.textContent='期限超過';
+          dueRow.appendChild(dueLabel); dueRow.appendChild(dueInp); dueRow.appendChild(overBadge);
+        } else {
+          dueRow.appendChild(dueLabel); dueRow.appendChild(dueInp);
+        }
+      } else {
+        dueRow.appendChild(dueLabel); dueRow.appendChild(dueInp);
+      }
+
+      // 保存ボタン
+      const saveBtn = document.createElement('button'); saveBtn.className='task-edit-save'; saveBtn.textContent='保存';
+      saveBtn.onclick = () => {
+        if (taskIdx>=0) {
+          const newSt = stSel.value;
+          memory.tasks[taskIdx].status = newSt;
+          memory.tasks[taskIdx].done = (newSt==='done');
+          memory.tasks[taskIdx].dueDate = dueInp.value ? new Date(dueInp.value).toISOString() : null;
+        } else {
+          // タスクが無ければ新規作成
+          memory.tasks.push({ title:bodyText, done:stSel.value==='done', status:stSel.value, ts:note.ts, dueDate:dueInp.value?new Date(dueInp.value).toISOString():null });
+        }
+        saveMemLocal(); renderTasks(); renderNotepad(); if(accessToken) saveToDrive();
+      };
+      stRow.appendChild(saveBtn);
+
+      panel.appendChild(stRow); panel.appendChild(dueRow);
+      card.appendChild(panel);
+    }
+
+    // 編集ボタン
+    editBtn.addEventListener('click', e => { e.stopPropagation(); startNoteEdit(card, note, body); });
     // 削除ボタン
-    card.querySelector('.note-delete-btn').addEventListener('click', (e) => {
+    delBtn.addEventListener('click', e => {
       e.stopPropagation();
       if (!confirm('このメモを削除しますか？')) return;
-      memory.notes = memory.notes.filter(n => n.id !== note.id);
-      saveMemLocal(); renderNotepad();
-      if (accessToken) saveToDrive();
+      memory.notes = memory.notes.filter(n=>n.id!==note.id);
+      saveMemLocal(); renderNotepad(); if(accessToken) saveToDrive();
     });
     list.appendChild(card);
   });
 }
 
-function startNoteEdit(card, note) {
-  // すでに編集中なら何もしない
+function startNoteEdit(card, note, bodyEl) {
   if (card.querySelector('.note-edit-area')) return;
-  const bodyEl = card.querySelector('.note-body');
   bodyEl.style.display = 'none';
-  const area = document.createElement('textarea');
-  area.className = 'note-edit-area';
-  area.value = note.text || '';
-  const actions = document.createElement('div');
-  actions.className = 'note-edit-actions';
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'note-edit-save';
-  saveBtn.textContent = '保存';
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'note-edit-cancel';
-  cancelBtn.textContent = 'キャンセル';
-  actions.appendChild(saveBtn);
-  actions.appendChild(cancelBtn);
-  card.appendChild(area);
+  const area = document.createElement('textarea'); area.className='note-edit-area'; area.value=note.text||'';
+  const actions = document.createElement('div'); actions.className='note-edit-actions';
+  const saveBtn = document.createElement('button'); saveBtn.className='note-edit-save'; saveBtn.textContent='保存';
+  const cancelBtn = document.createElement('button'); cancelBtn.className='note-edit-cancel'; cancelBtn.textContent='キャンセル';
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+  // 予定カードなら予定日も編集できるようにする
+  let dateRow = null;
+  if (note.category === 'schedule') {
+    dateRow = document.createElement('div'); dateRow.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px;';
+    const lbl = document.createElement('label'); lbl.textContent='予定日：'; lbl.style.fontSize='11px'; lbl.style.color='#888';
+    const di = document.createElement('input'); di.type='date'; di.className='task-edit-date'; di.id='edit-schedule-date-'+note.id;
+    if (note.scheduleDate) di.value = note.scheduleDate;
+    dateRow.appendChild(lbl); dateRow.appendChild(di);
+  }
+  const taskPanel = card.querySelector('.task-edit-panel');
+  if (taskPanel) taskPanel.style.display='none';
+  card.insertBefore(area, card.querySelector('.note-edit-actions') || null);
+  if (dateRow) card.appendChild(dateRow);
   card.appendChild(actions);
-  area.focus();
-  area.setSelectionRange(area.value.length, area.value.length);
-  saveBtn.addEventListener('click', async () => {
-    const newText = area.value.trim();
-    if (!newText) return;
-    const idx = memory.notes.findIndex(n => n.id === note.id);
-    if (idx >= 0) {
+  area.focus(); area.setSelectionRange(area.value.length, area.value.length);
+  saveBtn.addEventListener('click', () => {
+    const newText = area.value.trim(); if (!newText) return;
+    const idx = memory.notes.findIndex(n=>n.id===note.id);
+    if (idx>=0) {
       memory.notes[idx].text = newText;
-      memory.notes[idx].classified = false;
+      if (dateRow) {
+        const di = dateRow.querySelector('input[type=date]');
+        memory.notes[idx].scheduleDate = di.value || null;
+      }
+      // タスクタイトルも更新
+      if (note.category==='task') {
+        const normText = s=>s.replace(/[\s　。、・]/g,'').toLowerCase();
+        const nb=normText(note.text);
+        const tidx=(memory.tasks||[]).findIndex(t=>{const nt=normText(t.title);return nt===nb||nt.includes(nb)||nb.includes(nt);});
+        if(tidx>=0) memory.tasks[tidx].title=newText;
+      }
     }
-    saveMemLocal(); renderNotepad();
-    if (accessToken) saveToDrive();
-    // 再分類
-    try {
-      const newCat = await classifyNote(newText);
-      const idx2 = memory.notes.findIndex(n => n.id === note.id);
-      if (idx2 >= 0) { memory.notes[idx2].category = newCat; memory.notes[idx2].classified = true; }
-      saveMemLocal(); renderNotepad();
-      if (accessToken) saveToDrive();
-    } catch(e) {}
+    saveMemLocal(); renderTasks(); renderNotepad(); if(accessToken) saveToDrive();
   });
   cancelBtn.addEventListener('click', () => {
-    area.remove(); actions.remove();
-    bodyEl.style.display = '';
+    area.remove(); actions.remove(); if(dateRow) dateRow.remove();
+    bodyEl.style.display=''; if(taskPanel) taskPanel.style.display='';
   });
 }
 
@@ -1513,51 +1615,62 @@ function fmtNoteDate(ts) {
   return (d.getMonth()+1) + '/' + d.getDate() + ' ' + fmt(ts);
 }
 
-async function addNote() {
+// 選択中のカテゴリ
+let selectedNoteCat = 'memo';
+
+function selectNoteCat(cat) {
+  selectedNoteCat = cat;
+  document.querySelectorAll('.note-cat-pick-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.cat === cat);
+  });
+  // カテゴリ別の追加入力欄を切り替え
+  document.getElementById('note-extra-schedule').style.display = cat === 'schedule' ? 'flex' : 'none';
+  document.getElementById('note-extra-task').style.display = cat === 'task' ? 'flex' : 'none';
+}
+
+function addNote() {
   const inp = document.getElementById('note-input');
   const text = inp.value.trim();
   if (!text) return;
-  const btn = document.getElementById('note-add-btn');
-  btn.disabled = true;
-  btn.textContent = '分類中...';
-  inp.value = '';
-  // まずローカルに仮保存（category=memo）
-  const tempNote = { id: Date.now().toString(), text, category: 'memo', ts: Date.now(), classified: false };
-  if (!memory.notes) memory.notes = [];
-  memory.notes.push(tempNote);
-  saveMemLocal(); renderNotepad();
-  // AIで分類
-  try {
-    const category = await classifyNote(text);
-    const idx = memory.notes.findIndex(n => n.id === tempNote.id);
-    if (idx >= 0) {
-      memory.notes[idx].category = category;
-      memory.notes[idx].classified = true;
-    }
-    saveMemLocal(); renderNotepad();
-    if (accessToken) saveToDrive();
-  } catch(e) {
-    // 分類失敗でもそのまま保存済み
-  }
-  btn.disabled = false;
-  btn.textContent = '追加';
-}
 
-async function classifyNote(text) {
-  const r = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 50,
-      system: 'あなたはメモ分類AIです。ユーザーのメモを以下のカテゴリのいずれかに分類してください。\nカテゴリ: task（タスク・やること）, shopping（買い物リスト）, diary（日記・感想・気持ち）, idea（アイデア・企画・発想）, memo（その他のメモ・情報）\n\n必ず単語1つだけ（task/shopping/diary/idea/memo のいずれか）で返答してください。それ以外の文字は一切含めないでください。',
-      messages: [{ role: 'user', content: text }]
-    })
-  });
-  const data = await r.json();
-  const raw = (data.content?.[0]?.text || 'memo').trim().toLowerCase();
-  const valid = ['task','shopping','diary','idea','memo'];
-  return valid.includes(raw) ? raw : 'memo';
+  const note = {
+    id: Date.now().toString(),
+    text,
+    category: selectedNoteCat,
+    ts: Date.now(),
+  };
+
+  // 予定カテゴリ：予定日を保存
+  if (selectedNoteCat === 'schedule') {
+    const dateVal = document.getElementById('note-schedule-date').value;
+    if (dateVal) note.scheduleDate = dateVal; // "YYYY-MM-DD"
+  }
+
+  // タスクカテゴリ：締め切り・ステータスをtasksにも登録
+  if (selectedNoteCat === 'task') {
+    const dueVal = document.getElementById('note-task-due').value;
+    const statusVal = document.getElementById('note-task-status').value;
+    const newTask = {
+      title: text,
+      done: statusVal === 'done',
+      status: statusVal,
+      urgent: false,
+      ts: Date.now(),
+      dueDate: dueVal ? new Date(dueVal).toISOString() : null,
+    };
+    if (!memory.tasks) memory.tasks = [];
+    memory.tasks.push(newTask);
+  }
+
+  if (!memory.notes) memory.notes = [];
+  memory.notes.push(note);
+  inp.value = '';
+  // 追加入力欄をリセット
+  document.getElementById('note-schedule-date').value = '';
+  document.getElementById('note-task-due').value = '';
+  document.getElementById('note-task-status').value = 'todo';
+  saveMemLocal(); renderTasks(); renderNotepad();
+  if (accessToken) saveToDrive();
 }
 
 // アリアがメモを覗いてコメントする
@@ -1688,10 +1801,17 @@ function buildEventMap() {
   calEventStore = {};
   let eid = 0;
 
-  // ノート（diary・memo・idea・shopping）→ ts の日付
+  // ノート：diaryは作成日、scheduleは予定日、その他（shopping/idea/memo）はカレンダー非表示
   (memory.notes || []).forEach(note => {
-    const d = new Date(note.ts);
-    const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+    let anchor = null;
+    if (note.category === 'schedule' && note.scheduleDate) {
+      anchor = new Date(note.scheduleDate);
+    } else if (note.category === 'diary') {
+      anchor = new Date(note.ts);
+    } else {
+      return; // task/shopping/idea/memo はカレンダーに出さない
+    }
+    const key = anchor.getFullYear() + '-' + (anchor.getMonth()+1) + '-' + anchor.getDate();
     if (!map[key]) map[key] = [];
     const id = 'ev' + (eid++);
     const ev = { id, type:'note', category: note.category||'memo', label: note.text, note };
@@ -1724,8 +1844,8 @@ function openCalDetail(evId) {
   const ev = calEventStore[evId];
   if (!ev) return;
 
-  const CAT_COLOR = { task:'#534AB7', diary:'#854F0B', shopping:'#0F6E56', idea:'#1A5299', memo:'#555', other:'#666' };
-  const CAT_BG    = { task:'#EEEDFE', diary:'#FEF3E2', shopping:'#E8F8F1', idea:'#E8F0FE', memo:'#F3F2F8', other:'#F3F2F8' };
+  const CAT_COLOR = { task:'#534AB7', schedule:'#0A6EBD', diary:'#854F0B', shopping:'#0F6E56', idea:'#1A5299', memo:'#555', other:'#666' };
+  const CAT_BG    = { task:'#EEEDFE', schedule:'#E8F4FE', diary:'#FEF3E2', shopping:'#E8F8F1', idea:'#E8F0FE', memo:'#F3F2F8', other:'#F3F2F8' };
   const cat = ev.category || 'memo';
   const tagEl = document.getElementById('cd-tag');
   tagEl.textContent = CAT_LABELS[cat] || cat;
@@ -1994,12 +2114,14 @@ async function sendMsg() {
     }
     const raw = data.content?.[0]?.text || 'すみません、うまく返答できませんでした。';
     // ARIA_METAをまず除去してからメタ解析（表示には絶対出さない）
-    const metaMatch = raw.match(/ARIA_META:(\{[\s\S]*?\})/);
-    const clean = raw.replace(/\n?ARIA_META:\{[\s\S]*?\}/g, '').trim();
+    const metaMatch = raw.match(/ARIA_META:(\{[\s\S]*)/);
+    const metaJson = metaMatch ? metaMatch[1].match(/\{[\s\S]*/) ?
+      (() => { try { return JSON.parse(metaMatch[1].match(/(\{[\s\S]*\})/)?.[1] || '{}'); } catch(e){ return null; } })() : null : null;
+    const clean = raw.replace(/\n?ARIA_META:[\s\S]*/g, '').trim();
     let mood = 'normal';
-    if (metaMatch) {
+    if (metaJson) {
       try {
-        const meta = JSON.parse(metaMatch[1]);
+        const meta = metaJson;
         mood = meta.mood || 'normal';
         if (meta.remove_tasks && meta.remove_tasks.length) {
           const norm = s => s.replace(/[\s\u3000。、・]/g, '').toLowerCase();
