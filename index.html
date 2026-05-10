@@ -216,12 +216,28 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .cal-day-num { font-size: 11px; color: #555; margin-bottom: 2px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
 .cal-day:nth-child(7n+1) .cal-day-num { color: #E24B4A; }
 .cal-day:nth-child(7n) .cal-day-num { color: #534AB7; }
-.cal-event { font-size: 9px; border-radius: 3px; padding: 1px 4px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.cal-event { font-size: 9px; border-radius: 3px; padding: 1px 4px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: opacity 0.1s; }
+.cal-event:hover { opacity: 0.75; }
 .cal-event.cat-task { background: #EEEDFE; color: #534AB7; }
 .cal-event.cat-diary { background: #FEF3E2; color: #854F0B; }
 .cal-event.cat-shopping { background: #E8F8F1; color: #0F6E56; }
 .cal-event.cat-idea { background: #E8F0FE; color: #1A5299; }
 .cal-event.cat-memo { background: #F3F2F8; color: #555; }
+/* カレンダー詳細モーダル */
+.cal-detail-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.cal-detail-tag { font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 600; }
+.cal-detail-date { font-size: 11px; color: #999; margin-left: auto; }
+.cal-detail-title { font-size: 15px; font-weight: 600; color: #222; line-height: 1.5; margin: 8px 0 6px; word-break: break-word; }
+.cal-detail-body { font-size: 13px; color: #444; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+.cal-detail-meta { font-size: 11px; color: #aaa; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 3px; }
+.cal-detail-due { font-size: 12px; color: #E24B4A; font-weight: 600; margin-top: 4px; }
+.cal-detail-done { font-size: 12px; color: #1D9E75; font-weight: 600; margin-top: 4px; }
+.cal-detail-actions { display: flex; gap: 6px; margin-top: 10px; }
+.cal-detail-goto-btn { flex: 1; font-size: 12px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 8px; padding: 8px; cursor: pointer; }
+.cal-detail-goto-btn:hover { background: #DDD9FC; }
+.cal-detail-done-btn { flex: 1; font-size: 12px; color: white; background: #1D9E75; border: none; border-radius: 8px; padding: 8px; cursor: pointer; }
+.cal-detail-done-btn:hover { background: #157a5a; }
+.cal-detail-done-btn.already { background: #eee; color: #aaa; cursor: default; }
 
 /* 年表示 */
 .cal-year-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding: 12px; }
@@ -400,6 +416,23 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
       <div class="modal-title">&#x1F4DC; アリアのつぶやきログ</div>
       <div id="peek-log-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;"></div>
       <button class="modal-close-btn" onclick="closePeekLog()">閉じる</button>
+    </div>
+  </div>
+
+  <!-- カレンダー詳細モーダル -->
+  <div class="modal-overlay" id="cal-detail-modal">
+    <div class="modal-box" style="width:340px;">
+      <div class="cal-detail-header">
+        <span class="cal-detail-tag" id="cd-tag"></span>
+        <span class="cal-detail-date" id="cd-date"></span>
+      </div>
+      <div class="cal-detail-title" id="cd-title"></div>
+      <div class="cal-detail-body" id="cd-body"></div>
+      <div id="cd-due" class="cal-detail-due" style="display:none;"></div>
+      <div id="cd-done" class="cal-detail-done" style="display:none;">&#x2713; 完了済み</div>
+      <div class="cal-detail-meta" id="cd-meta"></div>
+      <div class="cal-detail-actions" id="cd-actions"></div>
+      <button class="modal-close-btn" onclick="closeCalDetail()" style="margin-top:8px;">閉じる</button>
     </div>
   </div>
 
@@ -697,6 +730,7 @@ function buildSystemPrompt() {
     const recent = memory.notes.slice(-10);
     sys += '\n\nメモ帳（直近10件）:\n' + recent.map(n => `[${n.category||'memo'}] ${n.text}`).join('\n');
   }
+  sys += '\n\n【タスクの期限日】タスクに期限が含まれる場合（「〇日まで」「来週金曜」「今月末」など）、ARIA_METAのtasksフィールドのタスクオブジェクトに dueDate フィールドをISO8601形式（例: "2026-05-15T00:00:00"）で含めてください。例: {"title":"企画書提出","done":false,"dueDate":"2026-05-15T00:00:00"}。カレンダーの期限日イベントとして表示されます。';
   sys += '\n\n【メモ帳への自動追加】ユーザーがチャット中に「メモに追加して」「メモしておいて」「記録して」などとリクエストした場合、または会話の中でメモ帳に保存すべき情報（買い物リスト、アイデア、日記的内容など）が含まれる場合は、ARIA_METAのnote_addフィールドに追加するメモを配列で指定してください。各要素は { "text": "メモ内容" } の形式です。例: ARIA_META:{"mood":"normal","note_add":[{"text":"牛乳を買う"},{"text":"企画書の締め切りは金曜日"}]}';
   return sys;
 }
@@ -1283,59 +1317,188 @@ function renderCalendar() {
 }
 
 // メモ帳イベントを日付→配列のマップに変換
+// イベント一時ストア（クリックハンドラ用）
+let calEventStore = {};
+
 function buildEventMap() {
   const map = {};
+  calEventStore = {};
+  let eid = 0;
+
+  // ノート（diary・memo・idea・shopping）→ ts の日付
   (memory.notes || []).forEach(note => {
     const d = new Date(note.ts);
     const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
     if (!map[key]) map[key] = [];
-    map[key].push(note);
+    const id = 'ev' + (eid++);
+    const ev = { id, type:'note', category: note.category||'memo', label: note.text, note };
+    calEventStore[id] = ev;
+    map[key].push(ev);
   });
-  (memory.tasks || []).forEach(task => {
-    if (!task.ts) return;
-    const d = new Date(task.ts);
-    const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+
+  // タスク → dueDate優先、なければts
+  (memory.tasks || []).forEach((task, tidx) => {
+    const anchor = task.dueDate ? new Date(task.dueDate) : (task.ts ? new Date(task.ts) : null);
+    if (!anchor) return;
+    const key = anchor.getFullYear() + '-' + (anchor.getMonth()+1) + '-' + anchor.getDate();
     if (!map[key]) map[key] = [];
-    map[key].push({ text: task.title, category: 'task', ts: task.ts });
+    const id = 'ev' + (eid++);
+    const ev = { id, type:'task', category:'task', label: task.title, task, taskIdx: tidx, dueDate: task.dueDate||null };
+    calEventStore[id] = ev;
+    map[key].push(ev);
   });
+
   return map;
+}
+
+function fmtCalDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate() + ' ' + fmt(ts);
+}
+
+function openCalDetail(evId) {
+  const ev = calEventStore[evId];
+  if (!ev) return;
+
+  const CAT_COLOR = { task:'#534AB7', diary:'#854F0B', shopping:'#0F6E56', idea:'#1A5299', memo:'#555', other:'#666' };
+  const CAT_BG    = { task:'#EEEDFE', diary:'#FEF3E2', shopping:'#E8F8F1', idea:'#E8F0FE', memo:'#F3F2F8', other:'#F3F2F8' };
+  const cat = ev.category || 'memo';
+  const tagEl = document.getElementById('cd-tag');
+  tagEl.textContent = CAT_LABELS[cat] || cat;
+  tagEl.style.background = CAT_BG[cat] || CAT_BG.other;
+  tagEl.style.color = CAT_COLOR[cat] || CAT_COLOR.other;
+
+  document.getElementById('cd-due').style.display = 'none';
+  document.getElementById('cd-done').style.display = 'none';
+  const actionsEl = document.getElementById('cd-actions');
+  actionsEl.innerHTML = '';
+
+  if (ev.type === 'task') {
+    const task = ev.task;
+    document.getElementById('cd-title').textContent = task.title;
+    document.getElementById('cd-body').textContent = '';
+    document.getElementById('cd-date').textContent = task.dueDate
+      ? '期限: ' + fmtCalDate(task.dueDate)
+      : (task.ts ? '登録: ' + fmtCalDate(task.ts) : '');
+    if (task.dueDate) {
+      const dueEl = document.getElementById('cd-due');
+      dueEl.textContent = '📅 期限: ' + fmtCalDate(task.dueDate);
+      dueEl.style.display = '';
+    }
+    if (task.done) document.getElementById('cd-done').style.display = '';
+    document.getElementById('cd-meta').innerHTML =
+      (task.urgent ? '<span style="color:#E24B4A;">⚡ 急ぎ</span>' : '') +
+      '<span>登録日: ' + (task.ts ? fmtCalDate(task.ts) : '—') + '</span>';
+
+    // 完了ボタン
+    const doneBtn = document.createElement('button');
+    doneBtn.className = 'cal-detail-done-btn' + (task.done ? ' already' : '');
+    doneBtn.textContent = task.done ? '完了済み' : '完了にする';
+    if (!task.done) {
+      doneBtn.onclick = () => {
+        const idx = memory.tasks.findIndex(t => t === task || t.title === task.title);
+        if (idx >= 0) { memory.tasks[idx].done = true; saveMemLocal(); renderTasks(); if (accessToken) saveToDrive(); renderCalendar(); }
+        closeCalDetail();
+      };
+    }
+    actionsEl.appendChild(doneBtn);
+
+    // チャットへ飛ぶボタン
+    const chatBtn = document.createElement('button');
+    chatBtn.className = 'cal-detail-goto-btn';
+    chatBtn.textContent = 'チャットで相談';
+    chatBtn.onclick = () => { closeCalDetail(); switchTab('chat'); document.getElementById('user-input').value = `「${task.title}」について相談したい`; };
+    actionsEl.appendChild(chatBtn);
+
+  } else {
+    // note
+    const note = ev.note;
+    document.getElementById('cd-title').textContent = CAT_LABELS[cat] || 'メモ';
+    document.getElementById('cd-body').textContent = note.text || '';
+    document.getElementById('cd-date').textContent = fmtCalDate(note.ts);
+    document.getElementById('cd-meta').innerHTML = '作成: ' + fmtCalDate(note.ts);
+
+    // メモ帳へ飛ぶボタン
+    const gotoBtn = document.createElement('button');
+    gotoBtn.className = 'cal-detail-goto-btn';
+    gotoBtn.textContent = 'メモ帳で開く';
+    gotoBtn.onclick = () => { closeCalDetail(); switchTab('notepad'); setNoteFilter(cat); };
+    actionsEl.appendChild(gotoBtn);
+  }
+
+  document.getElementById('cal-detail-modal').classList.add('open');
+}
+
+function closeCalDetail() {
+  document.getElementById('cal-detail-modal').classList.remove('open');
 }
 
 function renderCalMonth(body) {
   const y = calAnchor.getFullYear(), m = calAnchor.getMonth();
-  const title = y + '年' + (m+1) + '月';
-  document.getElementById('cal-title').textContent = title;
+  document.getElementById('cal-title').textContent = y + '年' + (m+1) + '月';
   const today = new Date(); today.setHours(0,0,0,0);
   const firstDay = new Date(y, m, 1);
   const lastDay = new Date(y, m+1, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const startDow = firstDay.getDay();
   const eventMap = buildEventMap();
   const DAYS = ['日','月','火','水','木','金','土'];
-  let html = '<div class="cal-month-grid"><div class="cal-weekday-row">' +
-    DAYS.map(d => `<div class="cal-weekday-cell">${d}</div>`).join('') + '</div><div class="cal-days-grid">';
-  // 前月の余白
+
+  const grid = document.createElement('div');
+  grid.className = 'cal-month-grid';
+
+  const wrow = document.createElement('div');
+  wrow.className = 'cal-weekday-row';
+  DAYS.forEach(d => { const c = document.createElement('div'); c.className='cal-weekday-cell'; c.textContent=d; wrow.appendChild(c); });
+  grid.appendChild(wrow);
+
+  const dgrid = document.createElement('div');
+  dgrid.className = 'cal-days-grid';
+
+  // 前月空白
   for (let i = 0; i < startDow; i++) {
     const d = new Date(y, m, -startDow + i + 1);
-    html += `<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
+    const cell = document.createElement('div'); cell.className='cal-day other-month';
+    cell.innerHTML = `<div class="cal-day-num">${d.getDate()}</div>`; dgrid.appendChild(cell);
   }
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const date = new Date(y, m, day); date.setHours(0,0,0,0);
     const isToday = date.getTime() === today.getTime();
     const key = y + '-' + (m+1) + '-' + day;
     const events = eventMap[key] || [];
-    const evHtml = events.slice(0,3).map(e =>
-      `<div class="cal-event cat-${e.category||'memo'}">${escHtml(e.text.slice(0,14))}</div>`
-    ).join('') + (events.length > 3 ? `<div class="cal-event cat-memo">+${events.length-3}件</div>` : '');
-    html += `<div class="cal-day${isToday ? ' today' : ''}" onclick="calDayClick(${y},${m},${day})"><div class="cal-day-num">${day}</div>${evHtml}</div>`;
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (isToday ? ' today' : '');
+    const numDiv = document.createElement('div'); numDiv.className='cal-day-num'; numDiv.textContent=day;
+    cell.appendChild(numDiv);
+    events.slice(0,3).forEach(ev => {
+      const evEl = document.createElement('div');
+      evEl.className = `cal-event cat-${ev.category}`;
+      evEl.textContent = ev.label.slice(0, ev.type==='task' ? 12 : 14) + (ev.type==='task' && ev.dueDate ? ' 📅' : '');
+      evEl.onclick = (e) => { e.stopPropagation(); openCalDetail(ev.id); };
+      cell.appendChild(evEl);
+    });
+    if (events.length > 3) {
+      const more = document.createElement('div'); more.className='cal-event cat-memo';
+      more.textContent = '+' + (events.length-3) + '件';
+      more.onclick = (e) => { e.stopPropagation(); openCalDayList(y, m, day, events); };
+      cell.appendChild(more);
+    }
+    dgrid.appendChild(cell);
   }
-  // 後月の余白（6行に揃える）
-  const total = startDow + lastDay.getDate();
-  const trailing = 42 - total;
+  // 後月空白
+  const trailing = 42 - (startDow + lastDay.getDate());
   for (let i = 1; i <= trailing; i++) {
-    html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+    const cell = document.createElement('div'); cell.className='cal-day other-month';
+    cell.innerHTML = `<div class="cal-day-num">${i}</div>`; dgrid.appendChild(cell);
   }
-  html += '</div></div>';
-  body.innerHTML = html;
+  grid.appendChild(dgrid);
+  body.innerHTML = ''; body.appendChild(grid);
+}
+
+function openCalDayList(y, m, day, events) {
+  // 3件超の日をクリックした時に全件詳細モーダルで選択できるようにする
+  // 簡易実装: 最初の詳細を表示（将来的にリスト化可能）
+  if (events[0]) openCalDetail(events[0].id);
 }
 
 function renderCalYear(body) {
@@ -1343,75 +1506,80 @@ function renderCalYear(body) {
   document.getElementById('cal-title').textContent = y + '年';
   const today = new Date();
   const eventMap = buildEventMap();
-  let html = '<div class="cal-year-grid">';
+  const wrap = document.createElement('div'); wrap.className='cal-year-grid';
   for (let m = 0; m < 12; m++) {
     const firstDay = new Date(y, m, 1);
     const lastDay = new Date(y, m+1, 0);
     const startDow = firstDay.getDay();
-    html += `<div class="cal-mini-month" onclick="calYearMonthClick(${y},${m})"><div class="cal-mini-month-title">${m+1}月</div><div class="cal-mini-grid">`;
-    for (let i = 0; i < startDow; i++) html += '<div class="cal-mini-cell other"></div>';
+    const mbox = document.createElement('div'); mbox.className='cal-mini-month';
+    mbox.onclick = () => calYearMonthClick(y, m);
+    const mtitle = document.createElement('div'); mtitle.className='cal-mini-month-title'; mtitle.textContent=(m+1)+'月'; mbox.appendChild(mtitle);
+    const mgrid = document.createElement('div'); mgrid.className='cal-mini-grid';
+    for (let i = 0; i < startDow; i++) { const c=document.createElement('div'); c.className='cal-mini-cell other'; mgrid.appendChild(c); }
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const key = y + '-' + (m+1) + '-' + d;
       const hasEv = !!(eventMap[key] && eventMap[key].length);
-      const isTd = (y === today.getFullYear() && m === today.getMonth() && d === today.getDate());
-      html += `<div class="cal-mini-cell${hasEv ? ' has-event' : ''}${isTd ? ' today' : ''}">${d}</div>`;
+      const isTd = (y===today.getFullYear() && m===today.getMonth() && d===today.getDate());
+      const c = document.createElement('div');
+      c.className = 'cal-mini-cell' + (hasEv?' has-event':'') + (isTd?' today':'');
+      c.textContent = d;
+      if (hasEv) { const evs=eventMap[key]; c.onclick=(e)=>{e.stopPropagation();openCalDetail(evs[0].id);}; c.style.cursor='pointer'; }
+      mgrid.appendChild(c);
     }
-    html += '</div></div>';
+    mbox.appendChild(mgrid); wrap.appendChild(mbox);
   }
-  html += '</div>';
-  body.innerHTML = html;
+  body.innerHTML = ''; body.appendChild(wrap);
 }
 
 function renderCalWeek(body) {
-  // 週の開始（日曜）を求める
-  const anchor = new Date(calAnchor);
-  anchor.setHours(0,0,0,0);
+  const anchor = new Date(calAnchor); anchor.setHours(0,0,0,0);
   const dow = anchor.getDay();
   const weekStart = new Date(anchor.getTime() - dow * 86400000);
   const weekDays = Array.from({length:7}, (_,i) => new Date(weekStart.getTime() + i * 86400000));
   const today = new Date(); today.setHours(0,0,0,0);
   const DAYS = ['日','月','火','水','木','金','土'];
-  const startStr = (weekStart.getMonth()+1) + '/' + weekStart.getDate();
-  const endStr = (weekDays[6].getMonth()+1) + '/' + weekDays[6].getDate();
-  document.getElementById('cal-title').textContent = weekStart.getFullYear() + '年 ' + startStr + '〜' + endStr;
+  const s = weekStart, e = weekDays[6];
+  document.getElementById('cal-title').textContent = s.getFullYear()+'年 '+(s.getMonth()+1)+'/'+s.getDate()+'〜'+(e.getMonth()+1)+'/'+e.getDate();
 
-  // ヘッダー
-  let html = '<div class="cal-week-grid"><div class="cal-week-header"><div class="cal-week-header-cell"></div>';
+  const wrap = document.createElement('div'); wrap.className='cal-week-grid';
+
+  // ヘッダー行
+  const header = document.createElement('div'); header.className='cal-week-header';
+  const emptyH = document.createElement('div'); emptyH.className='cal-week-header-cell'; header.appendChild(emptyH);
   weekDays.forEach((d,i) => {
-    const isT = d.getTime() === today.getTime();
-    html += `<div class="cal-week-header-cell${isT ? ' today-col' : ''}">${DAYS[i]}<br><span style="font-size:11px;font-weight:${isT?700:400}">${d.getDate()}</span></div>`;
+    const isT = d.getTime()===today.getTime();
+    const c = document.createElement('div'); c.className='cal-week-header-cell'+(isT?' today-col':'');
+    c.innerHTML = DAYS[i]+'<br><span style="font-size:11px;font-weight:'+(isT?700:400)+'">'+d.getDate()+'</span>';
+    header.appendChild(c);
   });
-  html += '</div><div class="cal-week-body"><div class="cal-week-inner">';
+  wrap.appendChild(header);
 
+  const weekBodyEl = document.createElement('div'); weekBodyEl.className='cal-week-body';
+  const inner = document.createElement('div'); inner.className='cal-week-inner';
   const eventMap = buildEventMap();
-  // 時間ラベルと時間枠
+
   for (let h = 0; h < 24; h++) {
-    html += `<div class="cal-time-label">${h}:00</div>`;
-    weekDays.forEach((d,di) => {
-      const isT = d.getTime() === today.getTime();
-      const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
-      const eventsAtHour = (eventMap[key] || []).filter(e => {
-        const eh = new Date(e.ts).getHours();
-        return eh === h;
+    const tlabel = document.createElement('div'); tlabel.className='cal-time-label'; tlabel.textContent=h+':00'; inner.appendChild(tlabel);
+    weekDays.forEach(d => {
+      const isT = d.getTime()===today.getTime();
+      const key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+      const eventsAtH = (eventMap[key]||[]).filter(ev => new Date(ev.note?.ts||ev.task?.ts||0).getHours()===h);
+      const slot = document.createElement('div'); slot.className='cal-week-slot'+(isT?' today-col':'');
+      eventsAtH.forEach(ev => {
+        const evEl = document.createElement('div'); evEl.className='cal-week-event cat-'+(ev.category||'memo');
+        evEl.textContent = ev.label.slice(0,12) + (ev.type==='task'&&ev.dueDate?' 📅':'');
+        evEl.onclick = () => openCalDetail(ev.id);
+        slot.appendChild(evEl);
       });
-      const evHtml = eventsAtHour.map(e =>
-        `<div class="cal-week-event cat-${e.category||'memo'}">${escHtml(e.text.slice(0,12))}</div>`
-      ).join('');
-      html += `<div class="cal-week-slot${isT ? ' today-col' : ''}">${evHtml}</div>`;
+      inner.appendChild(slot);
     });
   }
-  html += '</div></div></div>';
-  body.innerHTML = html;
-  // 現在時刻付近にスクロール
-  const nowH = new Date().getHours();
-  const weekBody = body.querySelector('.cal-week-body');
-  if (weekBody) weekBody.scrollTop = Math.max(0, (nowH - 1) * 42);
+  weekBodyEl.appendChild(inner); wrap.appendChild(weekBodyEl);
+  body.innerHTML = ''; body.appendChild(wrap);
+  weekBodyEl.scrollTop = Math.max(0,(new Date().getHours()-1)*42);
 }
 
-function calDayClick(y, m, d) {
-  // クリックした日にメモタブへジャンプして当日フィルタ（将来拡張用に今はtraceのみ）
-  showToast(`${y}/${m+1}/${d} をクリック`);
-}
+function calDayClick(y, m, d) { /* reserved */ }
 
 function calYearMonthClick(y, m) {
   calAnchor = new Date(y, m, 1);
