@@ -62,6 +62,8 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .qbtn { font-size: 12px; color: #555; background: #faf9f7; border: 1px solid #eee; border-radius: 8px; padding: 7px 10px; cursor: pointer; text-align: left; }
 .qbtn:hover { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
 .input-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; flex-shrink: 0; }
+.fixed-send-btn { font-size: 12px; color: #534AB7; background: #EEEDFE; border: 1px solid #AFA9EC; border-radius: 8px; padding: 6px 10px; cursor: pointer; text-align: left; font-family: sans-serif; transition: background 0.15s; }
+.fixed-send-btn:hover { background: #DDD9FC; }
 #user-input { flex: 1; font-size: 14px; padding: 9px 12px; border-radius: 10px; border: 1px solid #ddd; background: white; color: #222; resize: none; height: 40px; font-family: sans-serif; }
 #user-input:focus { outline: none; border-color: #7F77DD; }
 #send-btn { padding: 0 16px; border-radius: 10px; border: none; background: #534AB7; color: white; font-size: 13px; font-weight: 600; cursor: pointer; height: 40px; }
@@ -161,13 +163,13 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .note-cat-tag.cat-memo    { background: #F3F2F8; color: #555; }
 .note-cat-tag.cat-other   { background: #F3F2F8; color: #666; }
 .note-date-text { font-size: 10px; color: #bbb; margin-left: auto; }
+.note-actions { display: none; gap: 2px; flex-shrink: 0; }
+.note-card:hover .note-actions { display: flex; }
 .note-body { font-size: 13px; color: #333; line-height: 1.65; word-break: break-word; white-space: pre-wrap; }
 .note-body.truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
-.note-delete-btn { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; background: none; border: none; color: #ddd; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; border-radius: 4px; line-height: 1; }
-.note-card:hover .note-delete-btn { display: flex; }
+.note-delete-btn { width: 18px; height: 18px; background: none; border: none; color: #ccc; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; line-height: 1; padding: 0; }
 .note-delete-btn:hover { color: #E24B4A; background: #FCEBEB; }
-.note-edit-btn { position: absolute; top: 8px; right: 28px; width: 18px; height: 18px; background: none; border: none; color: #ddd; font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center; border-radius: 4px; }
-.note-card:hover .note-edit-btn { display: flex; }
+.note-edit-btn { width: 18px; height: 18px; background: none; border: none; color: #ccc; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; padding: 0; }
 .note-edit-btn:hover { color: #534AB7; background: #EEEDFE; }
 .note-edit-area { width: 100%; font-size: 13px; color: #333; line-height: 1.65; border: 1px solid #AFA9EC; border-radius: 6px; padding: 6px 8px; font-family: sans-serif; resize: vertical; min-height: 60px; background: #faf9ff; }
 .note-edit-area:focus { outline: none; border-color: #534AB7; }
@@ -254,8 +256,13 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
           <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
         </div>
         <div class="input-row">
-          <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
-          <button id="send-btn" onclick="sendMsg()">送信</button>
+          <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">
+            <button class="fixed-send-btn" onclick="quickSend('やるべきことを確認したい')">📋 やるべきことを確認したい</button>
+            <div style="display:flex;gap:8px;">
+              <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
+              <button id="send-btn" onclick="sendMsg()">送信</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="tab-pane" id="pane-notepad">
@@ -858,9 +865,11 @@ function switchTab(tab) {
   document.getElementById('pane-notepad').classList.toggle('active', tab === 'notepad');
   document.getElementById('tab-chat').classList.toggle('active', tab === 'chat');
   document.getElementById('tab-notepad').classList.toggle('active', tab === 'notepad');
+  // メモ帳中はキャラクターパネルを非表示
+  const lp = document.querySelector('.left-panel');
+  if (lp) lp.style.display = tab === 'notepad' ? 'none' : '';
   if (tab === 'notepad') {
     renderNotepad();
-    // アリアがメモを覗いてコメントする（確率30%、前回から5分以上経過）
     maybeAriaPeek();
   }
 }
@@ -910,8 +919,10 @@ function renderNotepad() {
       <div class="note-card-header">
         <span class="note-cat-tag ${catClass}">${catLabel}</span>
         <span class="note-date-text">${dateStr}</span>
-        <button class="note-edit-btn" title="編集">&#x270E;</button>
-        <button class="note-delete-btn" title="削除">&#xD7;</button>
+        <div class="note-actions">
+          <button class="note-edit-btn" title="編集">&#x270E;</button>
+          <button class="note-delete-btn" title="削除">&#xD7;</button>
+        </div>
       </div>
       <div class="note-body${isLong ? ' truncated' : ''}" data-noteid="${note.id}">${escHtml(bodyText)}</div>
     `;
@@ -1070,14 +1081,6 @@ async function maybeAriaPeek() {
     const comment = data.content?.[0]?.text?.trim();
     if (comment) {
       showAriaPeek(comment);
-      // チャット側にも投稿（会話履歴にも乗せる）
-      const peekTs = Date.now();
-      const peekMsg = '（メモ帳から）' + comment;
-      history.push({ role: 'assistant', content: peekMsg });
-      displayLog.push({ role: 'aria', text: peekMsg, ts: peekTs });
-      saveLocal(); updateCount();
-      // チャットが表示中なら即描画、そうでなければ次回tab切り替え時に出る
-      if (currentTab === 'chat') appendAriaMsg(peekMsg, peekTs);
     }
   } catch(e) {}
 }
