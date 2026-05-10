@@ -21,7 +21,11 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .user-badge { font-size: 11px; color: #085041; background: #E1F5EE; border-radius: 20px; padding: 2px 8px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .login-btn-small { font-size: 11px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 20px; padding: 3px 10px; cursor: pointer; }
 .body-row { flex: 1; display: flex; overflow: hidden; }
-.left-panel { width: 200px; flex-shrink: 0; background: #faf9f7; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; padding: 14px 10px; gap: 8px; overflow-y: auto; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+/* チャット内レイアウト: 左パネル + チャット本体を横並び */
+.chat-with-panel { flex: 1; display: flex; overflow: hidden; }
+.left-panel { width: 180px; flex-shrink: 0; background: #faf9f7; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; padding: 12px 10px; gap: 8px; overflow-y: auto; }
+.chat-inner { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .char-img { width: 200px; height: 260px; object-fit: cover; object-position: top; transition: opacity 0.2s; }
 .char-name { font-size: 14px; font-weight: 600; color: #333; }
 .mood-pill { font-size: 11px; color: #534AB7; background: #EEEDFE; border-radius: 20px; padding: 3px 10px; }
@@ -186,6 +190,74 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .note-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .notepad-empty { text-align: center; color: #bbb; font-size: 13px; margin: auto; padding: 40px 20px; line-height: 2; }
 
+/* ===== カレンダー ===== */
+.cal-toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid #eee; flex-shrink: 0; background: #faf9f7; }
+.cal-title { font-size: 13px; font-weight: 600; color: #333; flex: 1; text-align: center; }
+.cal-nav-btn { width: 24px; height: 24px; background: none; border: 1px solid #eee; border-radius: 6px; cursor: pointer; font-size: 14px; color: #666; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cal-nav-btn:hover { background: #EEEDFE; color: #534AB7; border-color: #AFA9EC; }
+.cal-view-btns { display: flex; gap: 2px; background: #f0effa; border-radius: 7px; padding: 2px; flex-shrink: 0; }
+.cal-view-btn { font-size: 11px; color: #888; background: none; border: none; border-radius: 5px; padding: 3px 9px; cursor: pointer; font-family: sans-serif; }
+.cal-view-btn.active { background: white; color: #534AB7; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.cal-today-btn { font-size: 11px; color: #534AB7; background: #EEEDFE; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; flex-shrink: 0; }
+.cal-today-btn:hover { background: #DDD9FC; }
+.cal-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+
+/* 月表示 */
+.cal-month-grid { display: flex; flex-direction: column; height: 100%; }
+.cal-weekday-row { display: grid; grid-template-columns: repeat(7,1fr); border-bottom: 1px solid #eee; background: #faf9f7; flex-shrink: 0; }
+.cal-weekday-cell { font-size: 10px; color: #aaa; text-align: center; padding: 5px 0; }
+.cal-weekday-cell:first-child { color: #E24B4A; }
+.cal-weekday-cell:last-child { color: #534AB7; }
+.cal-days-grid { display: grid; grid-template-columns: repeat(7,1fr); flex: 1; }
+.cal-day { border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; padding: 3px 4px; min-height: 72px; cursor: pointer; transition: background 0.1s; position: relative; }
+.cal-day:hover { background: #faf9ff; }
+.cal-day.other-month .cal-day-num { color: #ddd; }
+.cal-day.today .cal-day-num { background: #534AB7; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.cal-day-num { font-size: 11px; color: #555; margin-bottom: 2px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.cal-day:nth-child(7n+1) .cal-day-num { color: #E24B4A; }
+.cal-day:nth-child(7n) .cal-day-num { color: #534AB7; }
+.cal-event { font-size: 9px; border-radius: 3px; padding: 1px 4px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.cal-event.cat-task { background: #EEEDFE; color: #534AB7; }
+.cal-event.cat-diary { background: #FEF3E2; color: #854F0B; }
+.cal-event.cat-shopping { background: #E8F8F1; color: #0F6E56; }
+.cal-event.cat-idea { background: #E8F0FE; color: #1A5299; }
+.cal-event.cat-memo { background: #F3F2F8; color: #555; }
+
+/* 年表示 */
+.cal-year-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding: 12px; }
+.cal-mini-month { background: #faf9f7; border-radius: 8px; padding: 8px; border: 1px solid #eee; cursor: pointer; }
+.cal-mini-month:hover { border-color: #AFA9EC; background: #EEEDFE; }
+.cal-mini-month-title { font-size: 11px; font-weight: 600; color: #534AB7; text-align: center; margin-bottom: 5px; }
+.cal-mini-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
+.cal-mini-cell { font-size: 8px; text-align: center; color: #888; padding: 1px 0; border-radius: 2px; }
+.cal-mini-cell.has-event { background: #EEEDFE; color: #534AB7; font-weight: 600; }
+.cal-mini-cell.today { background: #534AB7; color: white; border-radius: 50%; }
+.cal-mini-cell.other { color: #ddd; }
+
+/* 週表示 */
+.cal-week-grid { display: flex; flex-direction: column; height: 100%; }
+.cal-week-header { display: grid; grid-template-columns: 44px repeat(7,1fr); border-bottom: 1px solid #eee; background: #faf9f7; flex-shrink: 0; }
+.cal-week-header-cell { font-size: 10px; color: #888; text-align: center; padding: 5px 0; }
+.cal-week-header-cell.today-col { color: #534AB7; font-weight: 700; }
+.cal-week-body { flex: 1; overflow-y: auto; position: relative; }
+.cal-week-inner { display: grid; grid-template-columns: 44px repeat(7,1fr); }
+.cal-time-label { font-size: 9px; color: #bbb; text-align: right; padding-right: 5px; height: 42px; display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 2px; flex-shrink: 0; }
+.cal-week-slot { height: 42px; border-bottom: 1px solid #f5f5f5; border-left: 1px solid #f0f0f0; position: relative; }
+.cal-week-slot.today-col { background: #faf9ff; }
+.cal-week-slot.half-hour { border-bottom-color: #fafafa; }
+.cal-week-event { position: absolute; left: 2px; right: 2px; border-radius: 3px; padding: 1px 3px; font-size: 9px; overflow: hidden; cursor: pointer; z-index: 1; }
+.cal-week-event.cat-task { background: #EEEDFE; color: #534AB7; border-left: 2px solid #534AB7; }
+.cal-week-event.cat-diary { background: #FEF3E2; color: #854F0B; border-left: 2px solid #854F0B; }
+.cal-week-event.cat-memo { background: #F3F2F8; color: #555; border-left: 2px solid #aaa; }
+
+/* つぶやきログ */
+.peek-log-item { display: flex; gap: 8px; align-items: flex-start; padding: 8px; background: #faf9f7; border-radius: 8px; }
+.peek-log-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.peek-log-body { flex: 1; }
+.peek-log-text { font-size: 12px; color: #333; line-height: 1.6; }
+.peek-log-time { font-size: 10px; color: #bbb; margin-top: 2px; }
+.peek-log-empty { font-size: 13px; color: #bbb; text-align: center; padding: 20px; }
+
 /* アリアの割り込みバナー */
 .aria-peek { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; background: linear-gradient(135deg, #F0EFFC 0%, #E8F8F4 100%); border-bottom: 1px solid #E0DEFC; flex-shrink: 0; animation: peekIn 0.3s ease; }
 @keyframes peekIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
@@ -218,53 +290,58 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
   </div>
 
   <div class="body-row">
-    <div class="left-panel">
-      <img id="char-img" class="char-img" src="" alt="アリア">
-      <div class="char-name">アリア</div>
-      <div class="mood-pill" id="mood-text">待機中</div>
-
-      <div class="panel-section" id="task-panel" style="margin-top:4px;">
-        <div class="panel-label">タスク</div>
-        <div id="task-list"></div>
-      </div>
-
-      <div class="panel-section" style="margin-top:4px;">
-        <div class="panel-label">メモ</div>
-        <div id="memo-list" style="font-size:10px;color:#666;line-height:1.6;"></div>
-      </div>
-
-      <div style="margin-top:auto; display:flex; flex-direction:column; gap:4px; width:100%;">
-        <button class="side-btn" id="login-side-btn" onclick="signIn()">Googleでログイン</button>
-        <button class="side-btn danger" onclick="clearHistory()">履歴を消去</button>
-      </div>
-    </div>
-
     <div class="main">
       <div class="main-tabs">
         <button class="main-tab active" id="tab-notepad" onclick="switchTab('notepad')">&#x1F4D3; メモ帳</button>
         <button class="main-tab" id="tab-chat" onclick="switchTab('chat')">&#x1F4AC; チャット</button>
+        <button class="main-tab" id="tab-calendar" onclick="switchTab('calendar')">&#x1F4C5; カレンダー</button>
       </div>
+
+      <!-- チャットペイン（左パネル込み） -->
       <div class="tab-pane" id="pane-chat">
-        <div class="chat-header">
-          <span class="chat-header-title">アリアとの会話</span>
-          <span class="history-count" id="history-count">0 件</span>
-        </div>
-        <div class="chat-log" id="chat-log"></div>
-        <div class="quick-btns" id="quick-btns">
-          <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
-          <button class="qbtn" onclick="quickSend('今日のタスクを整理したいです')">タスクを整理する</button>
-          <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
-        </div>
-        <div class="input-row">
-          <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">
-            <button class="fixed-send-btn" onclick="quickSend('やるべきことを確認したい')">📋 やるべきことを確認したい</button>
-            <div style="display:flex;gap:8px;">
-              <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
-              <button id="send-btn" onclick="sendMsg()">送信</button>
+        <div class="chat-with-panel">
+          <div class="left-panel" id="left-panel">
+            <img id="char-img" class="char-img" src="" alt="アリア">
+            <div class="char-name">アリア</div>
+            <div class="mood-pill" id="mood-text">待機中</div>
+            <div class="panel-section" id="task-panel" style="margin-top:4px;">
+              <div class="panel-label">タスク</div>
+              <div id="task-list"></div>
+            </div>
+            <div class="panel-section" style="margin-top:4px;">
+              <div class="panel-label">メモ</div>
+              <div id="memo-list" style="font-size:10px;color:#666;line-height:1.6;"></div>
+            </div>
+            <div style="margin-top:auto; display:flex; flex-direction:column; gap:4px; width:100%;">
+              <button class="side-btn" id="login-side-btn" onclick="signIn()">Googleでログイン</button>
+              <button class="side-btn danger" onclick="clearHistory()">履歴を消去</button>
+            </div>
+          </div>
+          <div class="chat-inner">
+            <div class="chat-header">
+              <span class="chat-header-title">アリアとの会話</span>
+              <span class="history-count" id="history-count">0 件</span>
+            </div>
+            <div class="chat-log" id="chat-log"></div>
+            <div class="quick-btns" id="quick-btns">
+              <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
+              <button class="qbtn" onclick="quickSend('今日のタスクを整理したいです')">タスクを整理する</button>
+              <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
+            </div>
+            <div class="input-row">
+              <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">
+                <button class="fixed-send-btn" onclick="quickSend('やるべきことを確認したい')">&#x1F4CB; やるべきことを確認したい</button>
+                <div style="display:flex;gap:8px;">
+                  <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
+                  <button id="send-btn" onclick="sendMsg()">送信</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- メモ帳ペイン -->
       <div class="tab-pane active" id="pane-notepad">
         <div class="aria-peek" id="aria-peek" style="display:none;">
           <img class="aria-peek-avatar" id="aria-peek-avatar" src="" alt="アリア">
@@ -281,12 +358,30 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
             <button class="notepad-filter-btn" data-cat="memo" onclick="setNoteFilter('memo')">メモ</button>
           </div>
           <button class="notepad-sort-btn" id="note-sort-btn" onclick="toggleNoteSort()">&#x2193; 新しい順</button>
+          <button class="notepad-sort-btn" id="peek-btn" onclick="forcePeek()" title="アリアにつぶやいてもらう" style="margin-left:2px;">&#x1F4AD;</button>
+          <button class="notepad-sort-btn" id="peek-log-btn" onclick="openPeekLog()" title="つぶやきログ" style="margin-left:2px;">&#x1F4DC;</button>
         </div>
         <div class="notepad-list" id="notepad-list"></div>
         <div class="notepad-input-row">
           <textarea id="note-input" placeholder="なんでも書いてね。タスク、買い物メモ、日記... AIが自動で分類します。"></textarea>
           <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
         </div>
+      </div>
+
+      <!-- カレンダーペイン -->
+      <div class="tab-pane" id="pane-calendar">
+        <div class="cal-toolbar">
+          <button class="cal-nav-btn" onclick="calNav(-1)">&#x2039;</button>
+          <span class="cal-title" id="cal-title"></span>
+          <button class="cal-nav-btn" onclick="calNav(1)">&#x203A;</button>
+          <div class="cal-view-btns">
+            <button class="cal-view-btn active" id="calview-month" onclick="setCalView('month')">月</button>
+            <button class="cal-view-btn" id="calview-year" onclick="setCalView('year')">年</button>
+            <button class="cal-view-btn" id="calview-week" onclick="setCalView('week')">週</button>
+          </div>
+          <button class="cal-today-btn" onclick="calToday()">今日</button>
+        </div>
+        <div class="cal-body" id="cal-body"></div>
       </div>
     </div>
   </div>
@@ -297,6 +392,15 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
     <div class="login-overlay-name">アリア</div>
     <div class="login-overlay-msg">AIコンシェルジュ アリアへようこそ。<br>Googleアカウントでログインして<br>会話を始めましょう。</div>
     <button class="login-overlay-btn" onclick="signIn()">Googleでログイン</button>
+  </div>
+
+  <!-- つぶやきログモーダル -->
+  <div class="modal-overlay" id="peek-log-modal">
+    <div class="modal-box">
+      <div class="modal-title">&#x1F4DC; アリアのつぶやきログ</div>
+      <div id="peek-log-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;"></div>
+      <button class="modal-close-btn" onclick="closePeekLog()">閉じる</button>
+    </div>
   </div>
 
   <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
@@ -400,7 +504,7 @@ let SYSTEM_BASE = '';
 
 let history = [];
 let displayLog = [];
-let memory = { tasks: [], memo: "", aria_self: "", notes: [], char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" } };
+let memory = { tasks: [], memo: "", aria_self: "", notes: [], peekLog: [], char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" } };
 let accessToken = null;
 let driveFileId = null;
 let driveMemFileId = null;
@@ -528,6 +632,7 @@ function loadMemLocal() {
         memo: d.memo || '',
         aria_self: d.aria_self || '',
         notes: d.notes || [],
+        peekLog: d.peekLog || [],
         char_settings: d.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
       };
       driveMemFileId = d.driveMemFileId || null;
@@ -753,6 +858,7 @@ async function loadMemFromDrive() {
           memo: data.memo || '',
           aria_self: data.aria_self || '',
           notes: data.notes || [],
+          peekLog: data.peekLog || [],
           char_settings: data.char_settings || memory.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
         };
         saveMemLocal(); renderTasks(); renderMemo(); renderNotepad();
@@ -769,7 +875,7 @@ async function saveToDrive() {
     const trimHistory = history.slice(-MAX_STORE);
     const trimDisplay = displayLog.slice(-MAX_STORE);
     driveFileId = await driveWrite(driveFileId, DRIVE_CHAT_FILE, { history: trimHistory, displayLog: trimDisplay });
-    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo, aria_self: memory.aria_self||'', notes: memory.notes||[], char_settings: memory.char_settings||{} });
+    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo, aria_self: memory.aria_self||'', notes: memory.notes||[], peekLog: memory.peekLog||[], char_settings: memory.char_settings||{} });
     saveLocal(); saveMemLocal();
     setStatus('green', 'Drive同期済み — ' + fmt(Date.now()));
   } catch(e) { setStatus('red', 'Drive同期失敗'); }
@@ -866,17 +972,12 @@ function clearHistory() {
 let currentTab = 'notepad';
 function switchTab(tab) {
   currentTab = tab;
-  document.getElementById('pane-chat').classList.toggle('active', tab === 'chat');
-  document.getElementById('pane-notepad').classList.toggle('active', tab === 'notepad');
-  document.getElementById('tab-chat').classList.toggle('active', tab === 'chat');
-  document.getElementById('tab-notepad').classList.toggle('active', tab === 'notepad');
-  // メモ帳中はキャラクターパネルを非表示
-  const lp = document.querySelector('.left-panel');
-  if (lp) lp.style.display = tab === 'notepad' ? 'none' : '';
-  if (tab === 'notepad') {
-    renderNotepad();
-    maybeAriaPeek();
-  }
+  ['notepad','chat','calendar'].forEach(t => {
+    document.getElementById('pane-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'notepad') { renderNotepad(); maybeAriaPeek(); }
+  if (tab === 'calendar') renderCalendar();
 }
 
 // ===== メモ帳 =====
@@ -1065,12 +1166,22 @@ async function classifyNote(text) {
 // アリアがメモを覗いてコメントする
 async function maybeAriaPeek() {
   const now = Date.now();
-  if (now - lastPeekTime < 5 * 60 * 1000) return; // 5分以内はスキップ
-  if (Math.random() > 0.5) return; // 50%の確率
+  if (now - lastPeekTime < 60 * 60 * 1000) return; // 60分以内はスキップ
+  if (Math.random() > 0.10) return; // 10%の確率
   if (!memory.notes || memory.notes.length === 0) return;
-  lastPeekTime = now;
-  // 最近のメモ3件をピックアップしてアリアに感想を言わせる
-  const recent = (memory.notes || []).slice(-3).map(n => `[${CAT_LABELS[n.category]||'メモ'}] ${n.text}`).join('\n');
+  await doAriaPeek();
+}
+
+async function forcePeek() {
+  if (!memory.notes || memory.notes.length === 0) { showToast('メモがまだありません'); return; }
+  await doAriaPeek();
+}
+
+async function doAriaPeek() {
+  lastPeekTime = Date.now();
+  const recent = (memory.notes || []).slice(-5).map(n => `[${CAT_LABELS[n.category]||'メモ'}] ${n.text}`).join('\n');
+  const btn = document.getElementById('peek-btn');
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
   try {
     const r = await fetch(WORKER_URL, {
       method: 'POST',
@@ -1078,7 +1189,7 @@ async function maybeAriaPeek() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 120,
-        system: buildSystemPrompt() + '\n\n【特別指示】今あなたはユーザーのメモ帳をこっそり覗いています。メモの内容を見て、ひとこと感想・気づき・励まし・突っ込みなどを自然な口調でつぶやいてください。50文字以内で、会話の導入として自然なひとことにしてください。',
+        system: buildSystemPrompt() + '\n\n【特別指示】今あなたはユーザーのメモ帳をこっそり覗いています。メモの内容を見て、ひとこと感想・気づき・励まし・突っ込みなどを自然な口調でつぶやいてください。60文字以内で、自然なひとことにしてください。',
         messages: [{ role: 'user', content: '最近のメモ:\n' + recent }]
       })
     });
@@ -1086,8 +1197,38 @@ async function maybeAriaPeek() {
     const comment = data.content?.[0]?.text?.trim();
     if (comment) {
       showAriaPeek(comment);
+      // ログに保存
+      if (!memory.peekLog) memory.peekLog = [];
+      memory.peekLog.push({ text: comment, ts: Date.now() });
+      if (memory.peekLog.length > 100) memory.peekLog = memory.peekLog.slice(-100);
+      saveMemLocal();
+      if (accessToken) saveToDrive();
     }
   } catch(e) {}
+  if (btn) { btn.textContent = '💭'; btn.disabled = false; }
+}
+
+function openPeekLog() {
+  const list = document.getElementById('peek-log-list');
+  const logs = (memory.peekLog || []).slice().reverse();
+  if (!logs.length) {
+    list.innerHTML = '<div class="peek-log-empty">まだつぶやきはありません</div>';
+  } else {
+    list.innerHTML = logs.map(item => `
+      <div class="peek-log-item">
+        <img class="peek-log-avatar" src="${IMG_ICON}" alt="アリア">
+        <div class="peek-log-body">
+          <div class="peek-log-text">${escHtml(item.text)}</div>
+          <div class="peek-log-time">${fmtNoteDate(item.ts)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('peek-log-modal').classList.add('open');
+}
+
+function closePeekLog() {
+  document.getElementById('peek-log-modal').classList.remove('open');
 }
 
 function showAriaPeek(text) {
@@ -1108,6 +1249,174 @@ function closeAriaPeek() {
 document.getElementById('note-input').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addNote(); }
 });
+
+// ===== カレンダー =====
+let calView = 'month'; // 'month' | 'year' | 'week'
+let calAnchor = new Date(); // 表示基準日
+
+function setCalView(v) {
+  calView = v;
+  ['month','year','week'].forEach(x => {
+    document.getElementById('calview-' + x).classList.toggle('active', x === v);
+  });
+  renderCalendar();
+}
+
+function calNav(dir) {
+  if (calView === 'month') calAnchor = new Date(calAnchor.getFullYear(), calAnchor.getMonth() + dir, 1);
+  else if (calView === 'year') calAnchor = new Date(calAnchor.getFullYear() + dir, 0, 1);
+  else if (calView === 'week') calAnchor = new Date(calAnchor.getTime() + dir * 7 * 86400000);
+  renderCalendar();
+}
+
+function calToday() {
+  calAnchor = new Date();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const body = document.getElementById('cal-body');
+  if (!body) return;
+  if (calView === 'month') renderCalMonth(body);
+  else if (calView === 'year') renderCalYear(body);
+  else renderCalWeek(body);
+}
+
+// メモ帳イベントを日付→配列のマップに変換
+function buildEventMap() {
+  const map = {};
+  (memory.notes || []).forEach(note => {
+    const d = new Date(note.ts);
+    const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+    if (!map[key]) map[key] = [];
+    map[key].push(note);
+  });
+  (memory.tasks || []).forEach(task => {
+    if (!task.ts) return;
+    const d = new Date(task.ts);
+    const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+    if (!map[key]) map[key] = [];
+    map[key].push({ text: task.title, category: 'task', ts: task.ts });
+  });
+  return map;
+}
+
+function renderCalMonth(body) {
+  const y = calAnchor.getFullYear(), m = calAnchor.getMonth();
+  const title = y + '年' + (m+1) + '月';
+  document.getElementById('cal-title').textContent = title;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(y, m, 1);
+  const lastDay = new Date(y, m+1, 0);
+  const startDow = firstDay.getDay(); // 0=Sun
+  const eventMap = buildEventMap();
+  const DAYS = ['日','月','火','水','木','金','土'];
+  let html = '<div class="cal-month-grid"><div class="cal-weekday-row">' +
+    DAYS.map(d => `<div class="cal-weekday-cell">${d}</div>`).join('') + '</div><div class="cal-days-grid">';
+  // 前月の余白
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(y, m, -startDow + i + 1);
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
+  }
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const date = new Date(y, m, day); date.setHours(0,0,0,0);
+    const isToday = date.getTime() === today.getTime();
+    const key = y + '-' + (m+1) + '-' + day;
+    const events = eventMap[key] || [];
+    const evHtml = events.slice(0,3).map(e =>
+      `<div class="cal-event cat-${e.category||'memo'}">${escHtml(e.text.slice(0,14))}</div>`
+    ).join('') + (events.length > 3 ? `<div class="cal-event cat-memo">+${events.length-3}件</div>` : '');
+    html += `<div class="cal-day${isToday ? ' today' : ''}" onclick="calDayClick(${y},${m},${day})"><div class="cal-day-num">${day}</div>${evHtml}</div>`;
+  }
+  // 後月の余白（6行に揃える）
+  const total = startDow + lastDay.getDate();
+  const trailing = 42 - total;
+  for (let i = 1; i <= trailing; i++) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+  }
+  html += '</div></div>';
+  body.innerHTML = html;
+}
+
+function renderCalYear(body) {
+  const y = calAnchor.getFullYear();
+  document.getElementById('cal-title').textContent = y + '年';
+  const today = new Date();
+  const eventMap = buildEventMap();
+  let html = '<div class="cal-year-grid">';
+  for (let m = 0; m < 12; m++) {
+    const firstDay = new Date(y, m, 1);
+    const lastDay = new Date(y, m+1, 0);
+    const startDow = firstDay.getDay();
+    html += `<div class="cal-mini-month" onclick="calYearMonthClick(${y},${m})"><div class="cal-mini-month-title">${m+1}月</div><div class="cal-mini-grid">`;
+    for (let i = 0; i < startDow; i++) html += '<div class="cal-mini-cell other"></div>';
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const key = y + '-' + (m+1) + '-' + d;
+      const hasEv = !!(eventMap[key] && eventMap[key].length);
+      const isTd = (y === today.getFullYear() && m === today.getMonth() && d === today.getDate());
+      html += `<div class="cal-mini-cell${hasEv ? ' has-event' : ''}${isTd ? ' today' : ''}">${d}</div>`;
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function renderCalWeek(body) {
+  // 週の開始（日曜）を求める
+  const anchor = new Date(calAnchor);
+  anchor.setHours(0,0,0,0);
+  const dow = anchor.getDay();
+  const weekStart = new Date(anchor.getTime() - dow * 86400000);
+  const weekDays = Array.from({length:7}, (_,i) => new Date(weekStart.getTime() + i * 86400000));
+  const today = new Date(); today.setHours(0,0,0,0);
+  const DAYS = ['日','月','火','水','木','金','土'];
+  const startStr = (weekStart.getMonth()+1) + '/' + weekStart.getDate();
+  const endStr = (weekDays[6].getMonth()+1) + '/' + weekDays[6].getDate();
+  document.getElementById('cal-title').textContent = weekStart.getFullYear() + '年 ' + startStr + '〜' + endStr;
+
+  // ヘッダー
+  let html = '<div class="cal-week-grid"><div class="cal-week-header"><div class="cal-week-header-cell"></div>';
+  weekDays.forEach((d,i) => {
+    const isT = d.getTime() === today.getTime();
+    html += `<div class="cal-week-header-cell${isT ? ' today-col' : ''}">${DAYS[i]}<br><span style="font-size:11px;font-weight:${isT?700:400}">${d.getDate()}</span></div>`;
+  });
+  html += '</div><div class="cal-week-body"><div class="cal-week-inner">';
+
+  const eventMap = buildEventMap();
+  // 時間ラベルと時間枠
+  for (let h = 0; h < 24; h++) {
+    html += `<div class="cal-time-label">${h}:00</div>`;
+    weekDays.forEach((d,di) => {
+      const isT = d.getTime() === today.getTime();
+      const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+      const eventsAtHour = (eventMap[key] || []).filter(e => {
+        const eh = new Date(e.ts).getHours();
+        return eh === h;
+      });
+      const evHtml = eventsAtHour.map(e =>
+        `<div class="cal-week-event cat-${e.category||'memo'}">${escHtml(e.text.slice(0,12))}</div>`
+      ).join('');
+      html += `<div class="cal-week-slot${isT ? ' today-col' : ''}">${evHtml}</div>`;
+    });
+  }
+  html += '</div></div></div>';
+  body.innerHTML = html;
+  // 現在時刻付近にスクロール
+  const nowH = new Date().getHours();
+  const weekBody = body.querySelector('.cal-week-body');
+  if (weekBody) weekBody.scrollTop = Math.max(0, (nowH - 1) * 42);
+}
+
+function calDayClick(y, m, d) {
+  // クリックした日にメモタブへジャンプして当日フィルタ（将来拡張用に今はtraceのみ）
+  showToast(`${y}/${m+1}/${d} をクリック`);
+}
+
+function calYearMonthClick(y, m) {
+  calAnchor = new Date(y, m, 1);
+  setCalView('month');
+}
 
 async function sendMsg() {
   const inp = document.getElementById('user-input');
@@ -1252,9 +1561,6 @@ document.getElementById('user-input').addEventListener('keydown', e => {
 });
 
 loadLocal(); loadMemLocal(); renderAll(); renderTasks(); renderMemo(); renderNotepad(); updateCount();
-// デフォルトがメモ帳なので左パネルを初期非表示
-const _lp = document.querySelector('.left-panel');
-if (_lp) _lp.style.display = 'none';
 showOverlay();
 
 if (isMobile()) document.getElementById('menu-btn').style.display = 'none';
