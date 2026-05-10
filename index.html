@@ -241,10 +241,10 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 
     <div class="main">
       <div class="main-tabs">
-        <button class="main-tab active" id="tab-chat" onclick="switchTab('chat')">&#x1F4AC; チャット</button>
-        <button class="main-tab" id="tab-notepad" onclick="switchTab('notepad')">&#x1F4D3; メモ帳</button>
+        <button class="main-tab active" id="tab-notepad" onclick="switchTab('notepad')">&#x1F4D3; メモ帳</button>
+        <button class="main-tab" id="tab-chat" onclick="switchTab('chat')">&#x1F4AC; チャット</button>
       </div>
-      <div class="tab-pane active" id="pane-chat">
+      <div class="tab-pane" id="pane-chat">
         <div class="chat-header">
           <span class="chat-header-title">アリアとの会話</span>
           <span class="history-count" id="history-count">0 件</span>
@@ -265,7 +265,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
           </div>
         </div>
       </div>
-      <div class="tab-pane" id="pane-notepad">
+      <div class="tab-pane active" id="pane-notepad">
         <div class="aria-peek" id="aria-peek" style="display:none;">
           <img class="aria-peek-avatar" id="aria-peek-avatar" src="" alt="アリア">
           <div class="aria-peek-text" id="aria-peek-text"></div>
@@ -588,6 +588,11 @@ function buildSystemPrompt() {
     const active = memory.tasks.filter(t=>!t.done);
     if (active.length) sys += '\n\n現在のタスク:\n' + active.map(t=>'- '+t.title+(t.urgent?'（急）':'')).join('\n');
   }
+  if (memory.notes && memory.notes.length) {
+    const recent = memory.notes.slice(-10);
+    sys += '\n\nメモ帳（直近10件）:\n' + recent.map(n => `[${n.category||'memo'}] ${n.text}`).join('\n');
+  }
+  sys += '\n\n【メモ帳への自動追加】ユーザーがチャット中に「メモに追加して」「メモしておいて」「記録して」などとリクエストした場合、または会話の中でメモ帳に保存すべき情報（買い物リスト、アイデア、日記的内容など）が含まれる場合は、ARIA_METAのnote_addフィールドに追加するメモを配列で指定してください。各要素は { "text": "メモ内容" } の形式です。例: ARIA_META:{"mood":"normal","note_add":[{"text":"牛乳を買う"},{"text":"企画書の締め切りは金曜日"}]}';
   return sys;
 }
 
@@ -858,7 +863,7 @@ function clearHistory() {
 }
 
 // ===== タブ切り替え =====
-let currentTab = 'chat';
+let currentTab = 'notepad';
 function switchTab(tab) {
   currentTab = tab;
   document.getElementById('pane-chat').classList.toggle('active', tab === 'chat');
@@ -1201,6 +1206,29 @@ async function sendMsg() {
           if (newLines.length) memory.aria_self = (memory.aria_self ? memory.aria_self + '\n' : '') + newLines.join('\n');
         }
         renderTasks(); renderMemo(); saveMemLocal();
+        // メモ帳への自動追加
+        if (meta.note_add && meta.note_add.length) {
+          if (!memory.notes) memory.notes = [];
+          const addedNotes = [];
+          meta.note_add.forEach(item => {
+            if (!item.text || !item.text.trim()) return;
+            const tempNote = { id: (Date.now() + Math.random()).toString().replace('.',''), text: item.text.trim(), category: 'memo', ts: Date.now(), classified: false };
+            memory.notes.push(tempNote);
+            addedNotes.push(tempNote);
+          });
+          saveMemLocal(); renderNotepad();
+          // 非同期でAI分類
+          addedNotes.forEach(async (note) => {
+            try {
+              const cat = await classifyNote(note.text);
+              const idx = memory.notes.findIndex(n => n.id === note.id);
+              if (idx >= 0) { memory.notes[idx].category = cat; memory.notes[idx].classified = true; }
+              saveMemLocal(); renderNotepad();
+              if (accessToken) saveToDrive();
+            } catch(e) {}
+          });
+          if (addedNotes.length) showToast('メモ帳に ' + addedNotes.length + ' 件追加しました');
+        }
       } catch(e) {}
     }
     history.push({ role:'assistant', content:clean });
@@ -1224,6 +1252,9 @@ document.getElementById('user-input').addEventListener('keydown', e => {
 });
 
 loadLocal(); loadMemLocal(); renderAll(); renderTasks(); renderMemo(); renderNotepad(); updateCount();
+// デフォルトがメモ帳なので左パネルを初期非表示
+const _lp = document.querySelector('.left-panel');
+if (_lp) _lp.style.display = 'none';
 showOverlay();
 
 if (isMobile()) document.getElementById('menu-btn').style.display = 'none';
