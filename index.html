@@ -1081,16 +1081,17 @@ function clearHistory() {
 }
 
 // ===== 日本の祝日データ (2025-2027) =====
-const JP_HOLIDAYS = {
+// 祝日ベースデータ（振替休日・国民の休日は自動計算するため除外）
+const JP_HOLIDAYS_BASE = {
   '2025-1-1':'元日','2025-1-13':'成人の日','2025-2-11':'建国記念の日','2025-2-23':'天皇誕生日',
   '2025-3-20':'春分の日','2025-4-29':'昭和の日','2025-5-3':'憲法記念日','2025-5-4':'みどりの日',
-  '2025-5-5':'こどもの日','2025-5-6':'振替休日','2025-7-21':'海の日','2025-8-11':'山の日',
+  '2025-5-5':'こどもの日','2025-7-21':'海の日','2025-8-11':'山の日',
   '2025-9-15':'敬老の日','2025-9-23':'秋分の日','2025-10-13':'スポーツの日','2025-11-3':'文化の日',
-  '2025-11-23':'勤労感謝の日','2025-11-24':'振替休日',
+  '2025-11-23':'勤労感謝の日',
   '2026-1-1':'元日','2026-1-12':'成人の日','2026-2-11':'建国記念の日','2026-2-23':'天皇誕生日',
   '2026-3-20':'春分の日','2026-4-29':'昭和の日','2026-5-3':'憲法記念日','2026-5-4':'みどりの日',
   '2026-5-5':'こどもの日','2026-7-20':'海の日','2026-8-11':'山の日','2026-9-21':'敬老の日',
-  '2026-9-22':'国民の休日','2026-9-23':'秋分の日','2026-10-12':'スポーツの日','2026-11-3':'文化の日',
+  '2026-9-23':'秋分の日','2026-10-12':'スポーツの日','2026-11-3':'文化の日',
   '2026-11-23':'勤労感謝の日',
   '2027-1-1':'元日','2027-1-11':'成人の日','2027-2-11':'建国記念の日','2027-2-23':'天皇誕生日',
   '2027-3-21':'春分の日','2027-4-29':'昭和の日','2027-5-3':'憲法記念日','2027-5-4':'みどりの日',
@@ -1098,8 +1099,52 @@ const JP_HOLIDAYS = {
   '2027-9-23':'秋分の日','2027-10-11':'スポーツの日','2027-11-3':'文化の日','2027-11-23':'勤労感謝の日',
 };
 
+// 年単位で振替休日・国民の休日を含む完全な祝日マップを生成（キャッシュ付き）
+const _holidayCache = {};
+function buildHolidayMap(year) {
+  if (_holidayCache[year]) return _holidayCache[year];
+  const map = {};
+  // ベースを読み込む
+  Object.entries(JP_HOLIDAYS_BASE).forEach(([k, v]) => {
+    const [y] = k.split('-');
+    if (parseInt(y) === year) map[k] = v;
+  });
+  // 振替休日の計算：祝日が日曜 → 翌月曜（さらにその月曜も祝日なら翌々日へ）
+  const toKey = (date) => date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+  const addedSubstitutes = {};
+  Object.entries(map).forEach(([k, name]) => {
+    const [y, m, d] = k.split('-').map(Number);
+    const date = new Date(y, m-1, d);
+    if (date.getDay() === 0) { // 日曜
+      let sub = new Date(date.getTime() + 86400000);
+      while (map[toKey(sub)] || addedSubstitutes[toKey(sub)]) {
+        sub = new Date(sub.getTime() + 86400000);
+      }
+      addedSubstitutes[toKey(sub)] = '振替休日';
+    }
+  });
+  Object.assign(map, addedSubstitutes);
+  // 国民の休日：祝日と祝日に挟まれた平日（日曜以外）
+  // 実用的な範囲でゴールデンウィーク期間などを対象に走査
+  for (let m = 1; m <= 12; m++) {
+    const lastDay = new Date(year, m, 0).getDate();
+    for (let d = 2; d <= lastDay - 1; d++) {
+      const cur = new Date(year, m-1, d);
+      if (cur.getDay() === 0) continue; // 日曜はスキップ
+      const key = toKey(cur);
+      if (map[key]) continue; // すでに祝日
+      const prev = toKey(new Date(cur.getTime() - 86400000));
+      const next = toKey(new Date(cur.getTime() + 86400000));
+      if (map[prev] && map[next]) map[key] = '国民の休日';
+    }
+  }
+  _holidayCache[year] = map;
+  return map;
+}
+
 function getHoliday(y, m, d) {
-  return JP_HOLIDAYS[y+'-'+m+'-'+d] || null;
+  const map = buildHolidayMap(y);
+  return map[y+'-'+m+'-'+d] || null;
 }
 
 // ===== 月次グリーティング (12ヶ月×10パターン) =====
@@ -1253,7 +1298,7 @@ const CAL_GREETINGS = {
 let lastGreetingMonth = -1;
 
 function showCalGreeting() {
-  const m = calAnchor.getMonth() + 1;
+  const m = new Date().getMonth() + 1; // 今日の月を参照
   const patterns = CAL_GREETINGS[m];
   if (!patterns) return;
   const pick = patterns[Math.floor(Math.random() * patterns.length)];
