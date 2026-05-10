@@ -132,6 +132,55 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .login-overlay-btn { font-size: 14px; font-weight: 600; color: white; background: #534AB7; border: none; border-radius: 10px; padding: 12px 28px; cursor: pointer; }
 .login-overlay-btn:hover { background: #3C3489; }
 @media (max-width: 520px) { .login-overlay { border-radius: 0; } }
+
+/* ===== タブ切り替え ===== */
+.main-tabs { display: flex; border-bottom: 1px solid #eee; flex-shrink: 0; background: #faf9f7; }
+.main-tab { flex: 1; font-size: 12px; color: #aaa; background: none; border: none; padding: 9px 0 7px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: sans-serif; }
+.main-tab.active { color: #534AB7; border-bottom-color: #534AB7; font-weight: 600; }
+.main-tab:hover:not(.active) { color: #666; }
+.tab-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.tab-pane.active { display: flex; }
+
+/* ===== メモ帳 ===== */
+.notepad-toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid #eee; flex-shrink: 0; background: #faf9f7; flex-wrap: wrap; }
+.notepad-toolbar-left { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: wrap; }
+.notepad-filter-btn { font-size: 11px; color: #777; background: white; border: 1px solid #ddd; border-radius: 20px; padding: 3px 9px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.notepad-filter-btn.active { color: #534AB7; border-color: #AFA9EC; background: #EEEDFE; font-weight: 600; }
+.notepad-filter-btn:hover:not(.active) { border-color: #bbb; color: #444; }
+.notepad-sort-btn { font-size: 11px; color: #777; background: white; border: 1px solid #ddd; border-radius: 6px; padding: 3px 8px; cursor: pointer; margin-left: auto; }
+.notepad-sort-btn:hover { background: #f0effc; color: #534AB7; }
+.notepad-list { flex: 1; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 7px; overscroll-behavior: contain; }
+.note-card { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; position: relative; }
+.note-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-color: #ddd; }
+.note-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.note-cat-tag { font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.note-cat-tag.cat-task    { background: #EEEDFE; color: #534AB7; }
+.note-cat-tag.cat-shopping{ background: #E8F8F1; color: #0F6E56; }
+.note-cat-tag.cat-diary   { background: #FEF3E2; color: #854F0B; }
+.note-cat-tag.cat-idea    { background: #E8F0FE; color: #1A5299; }
+.note-cat-tag.cat-memo    { background: #F3F2F8; color: #555; }
+.note-cat-tag.cat-other   { background: #F3F2F8; color: #666; }
+.note-date-text { font-size: 10px; color: #bbb; margin-left: auto; }
+.note-body { font-size: 13px; color: #333; line-height: 1.65; word-break: break-word; white-space: pre-wrap; }
+.note-body.truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
+.note-delete-btn { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; background: none; border: none; color: #ddd; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; border-radius: 4px; line-height: 1; }
+.note-card:hover .note-delete-btn { display: flex; }
+.note-delete-btn:hover { color: #E24B4A; background: #FCEBEB; }
+.notepad-input-row { display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid #eee; flex-shrink: 0; align-items: flex-end; }
+#note-input { flex: 1; font-size: 13px; padding: 8px 10px; border-radius: 10px; border: 1px solid #ddd; background: white; color: #222; resize: none; height: 60px; font-family: sans-serif; line-height: 1.6; }
+#note-input:focus { outline: none; border-color: #7F77DD; }
+.note-add-btn { padding: 0 14px; border-radius: 10px; border: none; background: #534AB7; color: white; font-size: 12px; font-weight: 600; cursor: pointer; height: 40px; white-space: nowrap; flex-shrink: 0; }
+.note-add-btn:hover { background: #3C3489; }
+.note-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.notepad-empty { text-align: center; color: #bbb; font-size: 13px; margin: auto; padding: 40px 20px; line-height: 2; }
+
+/* アリアの割り込みバナー */
+.aria-peek { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; background: linear-gradient(135deg, #F0EFFC 0%, #E8F8F4 100%); border-bottom: 1px solid #E0DEFC; flex-shrink: 0; animation: peekIn 0.3s ease; }
+@keyframes peekIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.aria-peek-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.aria-peek-text { font-size: 12px; color: #333; line-height: 1.6; flex: 1; }
+.aria-peek-close { font-size: 14px; color: #bbb; background: none; border: none; cursor: pointer; flex-shrink: 0; padding: 0; }
+.aria-peek-close:hover { color: #888; }
 </style>
 </head>
 <body>
@@ -179,19 +228,48 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
     </div>
 
     <div class="main">
-      <div class="chat-header">
-        <span class="chat-header-title">アリアとの会話</span>
-        <span class="history-count" id="history-count">0 件</span>
+      <div class="main-tabs">
+        <button class="main-tab active" id="tab-chat" onclick="switchTab('chat')">&#x1F4AC; チャット</button>
+        <button class="main-tab" id="tab-notepad" onclick="switchTab('notepad')">&#x1F4D3; メモ帳</button>
       </div>
-      <div class="chat-log" id="chat-log"></div>
-      <div class="quick-btns" id="quick-btns">
-        <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
-        <button class="qbtn" onclick="quickSend('今日のタスクを整理したいです')">タスクを整理する</button>
-        <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
+      <div class="tab-pane active" id="pane-chat">
+        <div class="chat-header">
+          <span class="chat-header-title">アリアとの会話</span>
+          <span class="history-count" id="history-count">0 件</span>
+        </div>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="quick-btns" id="quick-btns">
+          <button class="qbtn" onclick="quickSend('自己紹介してください')">アリアに自己紹介してもらう</button>
+          <button class="qbtn" onclick="quickSend('今日のタスクを整理したいです')">タスクを整理する</button>
+          <button class="qbtn" onclick="quickSend('最近の調子はどうですか、と聞いてください')">雑談する</button>
+        </div>
+        <div class="input-row">
+          <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
+          <button id="send-btn" onclick="sendMsg()">送信</button>
+        </div>
       </div>
-      <div class="input-row">
-        <textarea id="user-input" placeholder="アリアに話しかける..." rows="1"></textarea>
-        <button id="send-btn" onclick="sendMsg()">送信</button>
+      <div class="tab-pane" id="pane-notepad">
+        <div class="aria-peek" id="aria-peek" style="display:none;">
+          <img class="aria-peek-avatar" id="aria-peek-avatar" src="" alt="アリア">
+          <div class="aria-peek-text" id="aria-peek-text"></div>
+          <button class="aria-peek-close" onclick="closeAriaPeek()">&#xD7;</button>
+        </div>
+        <div class="notepad-toolbar">
+          <div class="notepad-toolbar-left" id="note-filter-btns">
+            <button class="notepad-filter-btn active" data-cat="all" onclick="setNoteFilter('all')">すべて</button>
+            <button class="notepad-filter-btn" data-cat="task" onclick="setNoteFilter('task')">タスク</button>
+            <button class="notepad-filter-btn" data-cat="shopping" onclick="setNoteFilter('shopping')">買い物</button>
+            <button class="notepad-filter-btn" data-cat="diary" onclick="setNoteFilter('diary')">日記</button>
+            <button class="notepad-filter-btn" data-cat="idea" onclick="setNoteFilter('idea')">アイデア</button>
+            <button class="notepad-filter-btn" data-cat="memo" onclick="setNoteFilter('memo')">メモ</button>
+          </div>
+          <button class="notepad-sort-btn" id="note-sort-btn" onclick="toggleNoteSort()">&#x2193; 新しい順</button>
+        </div>
+        <div class="notepad-list" id="notepad-list"></div>
+        <div class="notepad-input-row">
+          <textarea id="note-input" placeholder="なんでも書いてね。タスク、買い物メモ、日記... AIが自動で分類します。"></textarea>
+          <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
+        </div>
       </div>
     </div>
   </div>
@@ -212,6 +290,7 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
       <div style="font-size:11px;color:#888;">AIコンシェルジュ</div>
     </div>
     <button class="drawer-btn" id="login-drawer-btn" onclick="signIn()">Googleでログイン</button>
+    <button class="drawer-btn" onclick="switchTab('notepad');closeDrawer()">メモ帳を開く</button>
     <button class="drawer-btn danger" onclick="clearHistory();closeDrawer()">履歴を消去</button>
     <button class="drawer-btn" onclick="openSettingsModal();closeDrawer()">キャラクター設定</button>
     <button class="drawer-btn" onclick="openDevModal();closeDrawer()">開発者メニュー</button>
@@ -304,7 +383,7 @@ let SYSTEM_BASE = '';
 
 let history = [];
 let displayLog = [];
-let memory = { tasks: [], memo: "", aria_self: "", char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" } };
+let memory = { tasks: [], memo: "", aria_self: "", notes: [], char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" } };
 let accessToken = null;
 let driveFileId = null;
 let driveMemFileId = null;
@@ -431,6 +510,7 @@ function loadMemLocal() {
         tasks: d.tasks || [],
         memo: d.memo || '',
         aria_self: d.aria_self || '',
+        notes: d.notes || [],
         char_settings: d.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
       };
       driveMemFileId = d.driveMemFileId || null;
@@ -648,9 +728,10 @@ async function loadMemFromDrive() {
           tasks: data.tasks || [],
           memo: data.memo || '',
           aria_self: data.aria_self || '',
+          notes: data.notes || [],
           char_settings: data.char_settings || memory.char_settings || { name: 'アリア', role: 'AIコンシェルジュ', personality: '', skills: '', backstory: '' }
         };
-        saveMemLocal(); renderTasks(); renderMemo();
+        saveMemLocal(); renderTasks(); renderMemo(); renderNotepad();
       }
     }
   } catch(e) {}
@@ -664,7 +745,7 @@ async function saveToDrive() {
     const trimHistory = history.slice(-MAX_STORE);
     const trimDisplay = displayLog.slice(-MAX_STORE);
     driveFileId = await driveWrite(driveFileId, DRIVE_CHAT_FILE, { history: trimHistory, displayLog: trimDisplay });
-    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo, aria_self: memory.aria_self||'', char_settings: memory.char_settings||{} });
+    driveMemFileId = await driveWrite(driveMemFileId, DRIVE_MEM_FILE, { tasks: memory.tasks, memo: memory.memo, aria_self: memory.aria_self||'', notes: memory.notes||[], char_settings: memory.char_settings||{} });
     saveLocal(); saveMemLocal();
     setStatus('green', 'Drive同期済み — ' + fmt(Date.now()));
   } catch(e) { setStatus('red', 'Drive同期失敗'); }
@@ -756,6 +837,193 @@ function clearHistory() {
   if (accessToken) saveToDrive();
   showToast('履歴を消去しました');
 }
+
+// ===== タブ切り替え =====
+let currentTab = 'chat';
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('pane-chat').classList.toggle('active', tab === 'chat');
+  document.getElementById('pane-notepad').classList.toggle('active', tab === 'notepad');
+  document.getElementById('tab-chat').classList.toggle('active', tab === 'chat');
+  document.getElementById('tab-notepad').classList.toggle('active', tab === 'notepad');
+  if (tab === 'notepad') {
+    renderNotepad();
+    // アリアがメモを覗いてコメントする（確率30%、前回から5分以上経過）
+    maybeAriaPeek();
+  }
+}
+
+// ===== メモ帳 =====
+let noteFilter = 'all';
+let noteSort = 'desc'; // desc=新しい順, asc=古い順
+let ariaPeekTimeout = null;
+let lastPeekTime = 0;
+
+const CAT_LABELS = { task:'タスク', shopping:'買い物', diary:'日記', idea:'アイデア', memo:'メモ', other:'その他' };
+
+function setNoteFilter(cat) {
+  noteFilter = cat;
+  document.querySelectorAll('.notepad-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderNotepad();
+}
+
+function toggleNoteSort() {
+  noteSort = noteSort === 'desc' ? 'asc' : 'desc';
+  document.getElementById('note-sort-btn').textContent = (noteSort === 'desc' ? '\u2193 新しい順' : '\u2191 古い順');
+  renderNotepad();
+}
+
+function renderNotepad() {
+  const list = document.getElementById('notepad-list');
+  if (!list) return;
+  list.innerHTML = '';
+  let notes = (memory.notes || []).slice();
+  // フィルター
+  if (noteFilter !== 'all') notes = notes.filter(n => n.category === noteFilter);
+  // ソート
+  notes.sort((a, b) => noteSort === 'desc' ? b.ts - a.ts : a.ts - b.ts);
+  if (!notes.length) {
+    list.innerHTML = '<div class="notepad-empty">メモがありません。<br>下の入力欄からなんでも書いてみてください。</div>';
+    return;
+  }
+  notes.forEach(note => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    const catClass = 'cat-' + (note.category || 'other');
+    const catLabel = CAT_LABELS[note.category] || 'その他';
+    const dateStr = fmtNoteDate(note.ts);
+    const bodyText = note.text || '';
+    const isLong = bodyText.length > 120;
+    card.innerHTML = `
+      <div class="note-card-header">
+        <span class="note-cat-tag ${catClass}">${catLabel}</span>
+        <span class="note-date-text">${dateStr}</span>
+        <button class="note-delete-btn" title="削除">&#xD7;</button>
+      </div>
+      <div class="note-body${isLong ? ' truncated' : ''}">${escHtml(bodyText)}</div>
+    `;
+    if (isLong) {
+      card.querySelector('.note-body').addEventListener('click', function() {
+        this.classList.toggle('truncated');
+      });
+      card.style.cursor = 'pointer';
+    }
+    card.querySelector('.note-delete-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!confirm('このメモを削除しますか？')) return;
+      memory.notes = memory.notes.filter(n => n.id !== note.id);
+      saveMemLocal(); renderNotepad();
+      if (accessToken) saveToDrive();
+    });
+    list.appendChild(card);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtNoteDate(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  if (isToday) return '今日 ' + fmt(ts);
+  const isYesterday = d.toDateString() === new Date(now - 86400000).toDateString();
+  if (isYesterday) return '昨日 ' + fmt(ts);
+  return (d.getMonth()+1) + '/' + d.getDate() + ' ' + fmt(ts);
+}
+
+async function addNote() {
+  const inp = document.getElementById('note-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const btn = document.getElementById('note-add-btn');
+  btn.disabled = true;
+  btn.textContent = '分類中...';
+  inp.value = '';
+  // まずローカルに仮保存（category=memo）
+  const tempNote = { id: Date.now().toString(), text, category: 'memo', ts: Date.now(), classified: false };
+  if (!memory.notes) memory.notes = [];
+  memory.notes.push(tempNote);
+  saveMemLocal(); renderNotepad();
+  // AIで分類
+  try {
+    const category = await classifyNote(text);
+    const idx = memory.notes.findIndex(n => n.id === tempNote.id);
+    if (idx >= 0) {
+      memory.notes[idx].category = category;
+      memory.notes[idx].classified = true;
+    }
+    saveMemLocal(); renderNotepad();
+    if (accessToken) saveToDrive();
+  } catch(e) {
+    // 分類失敗でもそのまま保存済み
+  }
+  btn.disabled = false;
+  btn.textContent = '追加';
+}
+
+async function classifyNote(text) {
+  const r = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 50,
+      system: 'あなたはメモ分類AIです。ユーザーのメモを以下のカテゴリのいずれかに分類してください。\nカテゴリ: task（タスク・やること）, shopping（買い物リスト）, diary（日記・感想・気持ち）, idea（アイデア・企画・発想）, memo（その他のメモ・情報）\n\n必ず単語1つだけ（task/shopping/diary/idea/memo のいずれか）で返答してください。それ以外の文字は一切含めないでください。',
+      messages: [{ role: 'user', content: text }]
+    })
+  });
+  const data = await r.json();
+  const raw = (data.content?.[0]?.text || 'memo').trim().toLowerCase();
+  const valid = ['task','shopping','diary','idea','memo'];
+  return valid.includes(raw) ? raw : 'memo';
+}
+
+// アリアがメモを覗いてコメントする
+async function maybeAriaPeek() {
+  const now = Date.now();
+  if (now - lastPeekTime < 5 * 60 * 1000) return; // 5分以内はスキップ
+  if (Math.random() > 0.5) return; // 50%の確率
+  if (!memory.notes || memory.notes.length === 0) return;
+  lastPeekTime = now;
+  // 最近のメモ3件をピックアップしてアリアに感想を言わせる
+  const recent = (memory.notes || []).slice(-3).map(n => `[${CAT_LABELS[n.category]||'メモ'}] ${n.text}`).join('\n');
+  try {
+    const r = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 120,
+        system: buildSystemPrompt() + '\n\n【特別指示】今あなたはユーザーのメモ帳をこっそり覗いています。メモの内容を見て、ひとこと感想・気づき・励まし・突っ込みなどを自然な口調でつぶやいてください。50文字以内で、会話の導入として自然なひとことにしてください。',
+        messages: [{ role: 'user', content: '最近のメモ:\n' + recent }]
+      })
+    });
+    const data = await r.json();
+    const comment = data.content?.[0]?.text?.trim();
+    if (comment) showAriaPeek(comment);
+  } catch(e) {}
+}
+
+function showAriaPeek(text) {
+  const peek = document.getElementById('aria-peek');
+  const peekAvatar = document.getElementById('aria-peek-avatar');
+  const peekText = document.getElementById('aria-peek-text');
+  if (!peek) return;
+  peekAvatar.src = IMG_ICON;
+  peekText.textContent = text;
+  peek.style.display = 'flex';
+}
+
+function closeAriaPeek() {
+  const peek = document.getElementById('aria-peek');
+  if (peek) peek.style.display = 'none';
+}
+
+document.getElementById('note-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addNote(); }
+});
 
 async function sendMsg() {
   const inp = document.getElementById('user-input');
@@ -875,7 +1143,7 @@ document.getElementById('user-input').addEventListener('keydown', e => {
   if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
 });
 
-loadLocal(); loadMemLocal(); renderAll(); renderTasks(); renderMemo(); updateCount();
+loadLocal(); loadMemLocal(); renderAll(); renderTasks(); renderMemo(); renderNotepad(); updateCount();
 showOverlay();
 
 if (isMobile()) document.getElementById('menu-btn').style.display = 'none';
