@@ -166,6 +166,16 @@ body { font-family: sans-serif; background: #f5f4f0; display: flex; justify-cont
 .note-delete-btn { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; background: none; border: none; color: #ddd; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; border-radius: 4px; line-height: 1; }
 .note-card:hover .note-delete-btn { display: flex; }
 .note-delete-btn:hover { color: #E24B4A; background: #FCEBEB; }
+.note-edit-btn { position: absolute; top: 8px; right: 28px; width: 18px; height: 18px; background: none; border: none; color: #ddd; font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center; border-radius: 4px; }
+.note-card:hover .note-edit-btn { display: flex; }
+.note-edit-btn:hover { color: #534AB7; background: #EEEDFE; }
+.note-edit-area { width: 100%; font-size: 13px; color: #333; line-height: 1.65; border: 1px solid #AFA9EC; border-radius: 6px; padding: 6px 8px; font-family: sans-serif; resize: vertical; min-height: 60px; background: #faf9ff; }
+.note-edit-area:focus { outline: none; border-color: #534AB7; }
+.note-edit-actions { display: flex; gap: 6px; margin-top: 6px; }
+.note-edit-save { font-size: 11px; color: white; background: #534AB7; border: none; border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+.note-edit-save:hover { background: #3C3489; }
+.note-edit-cancel { font-size: 11px; color: #888; background: none; border: 1px solid #eee; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.note-edit-cancel:hover { background: #f5f5f5; }
 .notepad-input-row { display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid #eee; flex-shrink: 0; align-items: flex-end; }
 #note-input { flex: 1; font-size: 13px; padding: 8px 10px; border-radius: 10px; border: 1px solid #ddd; background: white; color: #222; resize: none; height: 60px; font-family: sans-serif; line-height: 1.6; }
 #note-input:focus { outline: none; border-color: #7F77DD; }
@@ -585,7 +595,9 @@ function renderAll() {
   displayLog.forEach(item => {
     const d = fmtDate(item.ts);
     if (d !== lastDate) { const s=document.createElement('div'); s.className='day-sep'; s.textContent=d; log.appendChild(s); lastDate=d; }
-    appendMsgEl(item.role, item.text, item.ts);
+    // 過去ログにARIA_METAが残っていた場合も除去
+    const cleanText = (item.text || '').replace(/\n?ARIA_META:\{[\s\S]*?\}/g, '').trim();
+    appendMsgEl(item.role, cleanText, item.ts);
   });
   log.scrollTop = log.scrollHeight;
   if (displayLog.length) document.getElementById('quick-btns').style.display='none';
@@ -898,16 +910,23 @@ function renderNotepad() {
       <div class="note-card-header">
         <span class="note-cat-tag ${catClass}">${catLabel}</span>
         <span class="note-date-text">${dateStr}</span>
+        <button class="note-edit-btn" title="編集">&#x270E;</button>
         <button class="note-delete-btn" title="削除">&#xD7;</button>
       </div>
-      <div class="note-body${isLong ? ' truncated' : ''}">${escHtml(bodyText)}</div>
+      <div class="note-body${isLong ? ' truncated' : ''}" data-noteid="${note.id}">${escHtml(bodyText)}</div>
     `;
+    // 長文折りたたみ
     if (isLong) {
       card.querySelector('.note-body').addEventListener('click', function() {
-        this.classList.toggle('truncated');
+        if (!card.querySelector('.note-edit-area')) this.classList.toggle('truncated');
       });
-      card.style.cursor = 'pointer';
     }
+    // 編集ボタン
+    card.querySelector('.note-edit-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startNoteEdit(card, note);
+    });
+    // 削除ボタン
     card.querySelector('.note-delete-btn').addEventListener('click', (e) => {
       e.stopPropagation();
       if (!confirm('このメモを削除しますか？')) return;
@@ -916,6 +935,53 @@ function renderNotepad() {
       if (accessToken) saveToDrive();
     });
     list.appendChild(card);
+  });
+}
+
+function startNoteEdit(card, note) {
+  // すでに編集中なら何もしない
+  if (card.querySelector('.note-edit-area')) return;
+  const bodyEl = card.querySelector('.note-body');
+  bodyEl.style.display = 'none';
+  const area = document.createElement('textarea');
+  area.className = 'note-edit-area';
+  area.value = note.text || '';
+  const actions = document.createElement('div');
+  actions.className = 'note-edit-actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'note-edit-save';
+  saveBtn.textContent = '保存';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'note-edit-cancel';
+  cancelBtn.textContent = 'キャンセル';
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  card.appendChild(area);
+  card.appendChild(actions);
+  area.focus();
+  area.setSelectionRange(area.value.length, area.value.length);
+  saveBtn.addEventListener('click', async () => {
+    const newText = area.value.trim();
+    if (!newText) return;
+    const idx = memory.notes.findIndex(n => n.id === note.id);
+    if (idx >= 0) {
+      memory.notes[idx].text = newText;
+      memory.notes[idx].classified = false;
+    }
+    saveMemLocal(); renderNotepad();
+    if (accessToken) saveToDrive();
+    // 再分類
+    try {
+      const newCat = await classifyNote(newText);
+      const idx2 = memory.notes.findIndex(n => n.id === note.id);
+      if (idx2 >= 0) { memory.notes[idx2].category = newCat; memory.notes[idx2].classified = true; }
+      saveMemLocal(); renderNotepad();
+      if (accessToken) saveToDrive();
+    } catch(e) {}
+  });
+  cancelBtn.addEventListener('click', () => {
+    area.remove(); actions.remove();
+    bodyEl.style.display = '';
   });
 }
 
@@ -1002,7 +1068,17 @@ async function maybeAriaPeek() {
     });
     const data = await r.json();
     const comment = data.content?.[0]?.text?.trim();
-    if (comment) showAriaPeek(comment);
+    if (comment) {
+      showAriaPeek(comment);
+      // チャット側にも投稿（会話履歴にも乗せる）
+      const peekTs = Date.now();
+      const peekMsg = '（メモ帳から）' + comment;
+      history.push({ role: 'assistant', content: peekMsg });
+      displayLog.push({ role: 'aria', text: peekMsg, ts: peekTs });
+      saveLocal(); updateCount();
+      // チャットが表示中なら即描画、そうでなければ次回tab切り替え時に出る
+      if (currentTab === 'chat') appendAriaMsg(peekMsg, peekTs);
+    }
   } catch(e) {}
 }
 
@@ -1062,7 +1138,9 @@ async function sendMsg() {
       return;
     }
     const raw = data.content?.[0]?.text || 'すみません、うまく返答できませんでした。';
-    const metaMatch = raw.match(/ARIA_META:(\{[\s\S]*?\})(?:\s*$|\n)/m);
+    // ARIA_METAをまず除去してからメタ解析（表示には絶対出さない）
+    const metaMatch = raw.match(/ARIA_META:(\{[\s\S]*?\})/);
+    const clean = raw.replace(/\n?ARIA_META:\{[\s\S]*?\}/g, '').trim();
     let mood = 'normal';
     if (metaMatch) {
       try {
@@ -1122,7 +1200,6 @@ async function sendMsg() {
         renderTasks(); renderMemo(); saveMemLocal();
       } catch(e) {}
     }
-    const clean = raw.replace(/\n?ARIA_META:\{[\s\S]*?\}\s*$/m, '').trim();
     history.push({ role:'assistant', content:clean });
     const replyTs = Date.now();
     displayLog.push({ role:'aria', text:clean, ts:replyTs });
