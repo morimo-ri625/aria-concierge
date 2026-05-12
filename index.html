@@ -9,30 +9,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-base: #0d0d0f;
-  --bg-surface: #141417;
-  --bg-elevated: #1c1c21;
-  --bg-hover: #242429;
-  --bg-card: #1a1a1f;
-  --border: #2a2a32;
-  --border-light: #222228;
-  --text-primary: #e8e8f0;
-  --text-secondary: #9090a8;
-  --text-muted: #555568;
-  --purple: #7c6df0;
-  --purple-dim: #4a3f99;
-  --purple-bright: #9d8ff5;
-  --purple-bg: #1e1a3a;
-  --purple-border: #3a3070;
-  --green: #2ec87a;
-  --green-bg: #0d2a1e;
-  --red: #e05555;
-  --red-bg: #2a0f0f;
-  --orange: #e89a2e;
-  --orange-bg: #2a1e0a;
-  --blue: #4a9eff;
-  --blue-bg: #0a1a2a;
-  --shadow: 0 4px 24px rgba(0,0,0,0.6);
+  /* ===== LIGHT THEME ===== */
+  --bg-base: #f0eef8;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f7f6fc;
+  --bg-hover: #ede9fb;
+  --bg-card: #fafafa;
+  --border: #e2dff4;
+  --border-light: #ede9fb;
+  --text-primary: #1a1830;
+  --text-secondary: #5a5580;
+  --text-muted: #a09cc0;
+  --purple: #6c5ce7;
+  --purple-dim: #8a79ee;
+  --purple-bright: #5a4ad1;
+  --purple-bg: #ede9fb;
+  --purple-border: #c5bdf5;
+  --green: #0f8c57;
+  --green-bg: #e6f7ef;
+  --red: #c93535;
+  --red-bg: #fdeaea;
+  --orange: #b36200;
+  --orange-bg: #fff3e0;
+  --blue: #1a6fc4;
+  --blue-bg: #e8f2fd;
+  --shadow: 0 4px 20px rgba(108,92,231,0.10);
   --radius: 12px;
   --radius-sm: 7px;
 }
@@ -435,6 +436,44 @@ body {
   .cal-gantt-grid { min-width: 700px; }
   .cal-gantt-label-col,.cal-gantt-row-label { width: 100px; }
 }
+
+/* ===== 付箋ボード ===== */
+.board-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.board-toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-elevated); }
+.board-toolbar-title { font-size: 12px; color: var(--text-secondary); flex: 1; }
+.board-add-btn { font-size: 12px; color: white; background: var(--purple); border: none; border-radius: 7px; padding: 5px 14px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: background 0.15s; font-weight: 600; }
+.board-add-btn:hover { background: var(--purple-dim); }
+.board-color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.15s, border-color 0.15s; flex-shrink: 0; }
+.board-color-dot:hover { transform: scale(1.2); }
+.board-color-dot.active { border-color: var(--purple); transform: scale(1.15); }
+.board-scroll { flex: 1; overflow: auto; position: relative; background: radial-gradient(circle, var(--purple-border) 1px, transparent 1px) var(--bg-base); background-size: 24px 24px; }
+.board-canvas { position: relative; min-width: 1200px; min-height: 900px; }
+.sticky-note { position: absolute; min-width: 140px; max-width: 260px; min-height: 80px; border-radius: 4px 4px 4px 18px; padding: 8px 10px 10px; box-shadow: 2px 4px 12px rgba(0,0,0,0.13), 0 1px 2px rgba(0,0,0,0.07); cursor: grab; user-select: none; font-family: 'Noto Sans JP', sans-serif; display: flex; flex-direction: column; gap: 4px; transition: box-shadow 0.15s, transform 0.12s; word-break: break-word; z-index: 1; }
+.sticky-note:active { cursor: grabbing; }
+.sticky-note.dragging { box-shadow: 4px 8px 24px rgba(0,0,0,0.22); transform: rotate(1.5deg) scale(1.03); z-index: 100; }
+.sticky-note.editing { cursor: default; z-index: 50; }
+.sticky-yellow   { background: #fff9c4; border-top: 3px solid #f0d000; }
+.sticky-pink     { background: #fce4ec; border-top: 3px solid #f48fb1; }
+.sticky-blue     { background: #e3f2fd; border-top: 3px solid #90caf9; }
+.sticky-green    { background: #e8f5e9; border-top: 3px solid #a5d6a7; }
+.sticky-lavender { background: #ede7f6; border-top: 3px solid #b39ddb; }
+.sticky-orange   { background: #fff3e0; border-top: 3px solid #ffcc80; }
+.sticky-note-header { display: flex; align-items: center; justify-content: flex-end; gap: 3px; opacity: 0; transition: opacity 0.15s; }
+.sticky-note:hover .sticky-note-header { opacity: 1; }
+.sticky-note.editing .sticky-note-header { opacity: 1; }
+.sticky-note-btn { width: 18px; height: 18px; border-radius: 4px; border: none; background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.45); font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; line-height: 1; transition: background 0.12s; }
+.sticky-note-btn:hover { background: rgba(0,0,0,0.18); color: rgba(0,0,0,0.8); }
+.sticky-note-btn.del:hover { background: rgba(200,50,50,0.15); color: #c93535; }
+.sticky-note-text { font-size: 12px; line-height: 1.65; color: #2a2440; flex: 1; white-space: pre-wrap; min-height: 40px; }
+.sticky-note-textarea { font-size: 12px; line-height: 1.65; color: #2a2440; border: none; background: transparent; resize: none; width: 100%; font-family: 'Noto Sans JP', sans-serif; outline: none; min-height: 60px; flex: 1; }
+.sticky-note-date { font-size: 9px; color: rgba(0,0,0,0.3); text-align: right; margin-top: 4px; flex-shrink: 0; }
+.board-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: var(--text-muted); font-size: 13px; line-height: 2.2; pointer-events: none; }
+.note-subtabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg-elevated); flex-shrink: 0; }
+.note-subtab { font-size: 12px; color: var(--text-muted); background: none; border: none; padding: 7px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.note-subtab.active { color: var(--purple-bright); border-bottom-color: var(--purple); font-weight: 600; }
+.note-subtab:hover:not(.active) { color: var(--text-secondary); }
+.note-subpane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.note-subpane.active { display: flex; }
 </style>
 </head>
 <body>
@@ -507,49 +546,79 @@ body {
 
       <!-- NOTEPAD PANE -->
       <div class="tab-pane active" id="pane-notepad">
+        <!-- アリアのぞき -->
         <div class="aria-peek" id="aria-peek" style="display:none;">
           <img class="aria-peek-avatar" id="aria-peek-avatar" src="" alt="アリア">
           <div class="aria-peek-text" id="aria-peek-text"></div>
           <button class="aria-peek-close" onclick="closeAriaPeek()">&#xD7;</button>
         </div>
-        <div class="notepad-toolbar">
-          <div class="notepad-toolbar-left" id="note-filter-btns">
-            <button class="notepad-filter-btn active" data-cat="all" onclick="setNoteFilter('all')">すべて</button>
-            <button class="notepad-filter-btn" data-cat="task" onclick="setNoteFilter('task')">タスク</button>
-            <button class="notepad-filter-btn" data-cat="schedule" onclick="setNoteFilter('schedule')">予定</button>
-            <button class="notepad-filter-btn" data-cat="diary" onclick="setNoteFilter('diary')">日記</button>
-            <button class="notepad-filter-btn" data-cat="idea" onclick="setNoteFilter('idea')">アイデア</button>
-            <button class="notepad-filter-btn" data-cat="memo" onclick="setNoteFilter('memo')">メモ</button>
-          </div>
-          <button class="notepad-sort-btn" id="note-sort-btn" onclick="toggleNoteSort()">↓ 新しい順</button>
-          <button class="notepad-sort-btn" id="peek-btn" onclick="forcePeek()" title="アリアにつぶやいてもらう">💭</button>
-          <button class="notepad-sort-btn" id="peek-log-btn" onclick="openPeekLog()" title="つぶやきログ">📜</button>
+        <!-- サブタブ -->
+        <div class="note-subtabs">
+          <button class="note-subtab active" id="subtab-list" onclick="switchNoteSubtab('list')">📋 リスト</button>
+          <button class="note-subtab" id="subtab-board" onclick="switchNoteSubtab('board')">📌 付箋ボード</button>
         </div>
-        <div class="notepad-list" id="notepad-list"></div>
-        <div class="note-input-form">
-          <div class="note-input-cat-row" id="note-cat-row">
-            <span style="font-size:10px;color:var(--text-muted);flex-shrink:0;">分類：</span>
-            <button class="note-cat-pick-btn selected" data-cat="memo" onclick="selectNoteCat('memo')">メモ</button>
-            <button class="note-cat-pick-btn" data-cat="task" onclick="selectNoteCat('task')">タスク</button>
-            <button class="note-cat-pick-btn" data-cat="schedule" onclick="selectNoteCat('schedule')">予定</button>
-            <button class="note-cat-pick-btn" data-cat="diary" onclick="selectNoteCat('diary')">日記</button>
-            <button class="note-cat-pick-btn" data-cat="idea" onclick="selectNoteCat('idea')">アイデア</button>
+
+        <!-- リストサブペイン -->
+        <div class="note-subpane active" id="subpane-list">
+          <div class="notepad-toolbar">
+            <div class="notepad-toolbar-left" id="note-filter-btns">
+              <button class="notepad-filter-btn active" data-cat="all" onclick="setNoteFilter('all')">すべて</button>
+              <button class="notepad-filter-btn" data-cat="task" onclick="setNoteFilter('task')">タスク</button>
+              <button class="notepad-filter-btn" data-cat="schedule" onclick="setNoteFilter('schedule')">予定</button>
+              <button class="notepad-filter-btn" data-cat="diary" onclick="setNoteFilter('diary')">日記</button>
+              <button class="notepad-filter-btn" data-cat="idea" onclick="setNoteFilter('idea')">アイデア</button>
+              <button class="notepad-filter-btn" data-cat="memo" onclick="setNoteFilter('memo')">メモ</button>
+            </div>
+            <button class="notepad-sort-btn" id="note-sort-btn" onclick="toggleNoteSort()">↓ 新しい順</button>
+            <button class="notepad-sort-btn" id="peek-btn" onclick="forcePeek()" title="アリアにつぶやいてもらう">💭</button>
+            <button class="notepad-sort-btn" id="peek-log-btn" onclick="openPeekLog()" title="つぶやきログ">📜</button>
           </div>
-          <div class="note-input-extra" id="note-extra-schedule" style="display:none;">
-            <label>予定日：</label><input type="date" id="note-schedule-date">
+          <div class="notepad-list" id="notepad-list"></div>
+          <div class="note-input-form">
+            <div class="note-input-cat-row" id="note-cat-row">
+              <span style="font-size:10px;color:var(--text-muted);flex-shrink:0;">分類：</span>
+              <button class="note-cat-pick-btn selected" data-cat="memo" onclick="selectNoteCat('memo')">メモ</button>
+              <button class="note-cat-pick-btn" data-cat="task" onclick="selectNoteCat('task')">タスク</button>
+              <button class="note-cat-pick-btn" data-cat="schedule" onclick="selectNoteCat('schedule')">予定</button>
+              <button class="note-cat-pick-btn" data-cat="diary" onclick="selectNoteCat('diary')">日記</button>
+              <button class="note-cat-pick-btn" data-cat="idea" onclick="selectNoteCat('idea')">アイデア</button>
+            </div>
+            <div class="note-input-extra" id="note-extra-schedule" style="display:none;">
+              <label>予定日：</label><input type="date" id="note-schedule-date">
+            </div>
+            <div class="note-input-extra" id="note-extra-task" style="display:none;">
+              <label>締め切り：</label><input type="date" id="note-task-due">
+              <label style="margin-left:6px;">進捗：</label>
+              <select id="note-task-status">
+                <option value="todo">未着手</option>
+                <option value="doing">進行中</option>
+                <option value="done">完了</option>
+              </select>
+            </div>
+            <div class="note-input-main-row">
+              <textarea id="note-input" placeholder="内容を入力..."></textarea>
+              <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
+            </div>
           </div>
-          <div class="note-input-extra" id="note-extra-task" style="display:none;">
-            <label>締め切り：</label><input type="date" id="note-task-due">
-            <label style="margin-left:6px;">進捗：</label>
-            <select id="note-task-status">
-              <option value="todo">未着手</option>
-              <option value="doing">進行中</option>
-              <option value="done">完了</option>
-            </select>
+        </div>
+
+        <!-- 付箋ボードサブペイン -->
+        <div class="note-subpane" id="subpane-board">
+          <div class="board-toolbar">
+            <span class="board-toolbar-title">クリックして付箋を追加 / ドラッグで移動</span>
+            <div style="display:flex;gap:5px;align-items:center;">
+              <span style="font-size:10px;color:var(--text-muted);">色：</span>
+              <div class="board-color-dot active" data-color="yellow" style="background:#fff9c4;border-color:#f0d000;" onclick="selectStickyColor('yellow',this)" title="黄"></div>
+              <div class="board-color-dot" data-color="pink" style="background:#fce4ec;border-color:#f48fb1;" onclick="selectStickyColor('pink',this)" title="ピンク"></div>
+              <div class="board-color-dot" data-color="blue" style="background:#e3f2fd;border-color:#90caf9;" onclick="selectStickyColor('blue',this)" title="青"></div>
+              <div class="board-color-dot" data-color="green" style="background:#e8f5e9;border-color:#a5d6a7;" onclick="selectStickyColor('green',this)" title="緑"></div>
+              <div class="board-color-dot" data-color="lavender" style="background:#ede7f6;border-color:#b39ddb;" onclick="selectStickyColor('lavender',this)" title="ラベンダー"></div>
+              <div class="board-color-dot" data-color="orange" style="background:#fff3e0;border-color:#ffcc80;" onclick="selectStickyColor('orange',this)" title="オレンジ"></div>
+            </div>
+            <button class="board-add-btn" onclick="addStickyNote()">+ 付箋を追加</button>
           </div>
-          <div class="note-input-main-row">
-            <textarea id="note-input" placeholder="内容を入力..."></textarea>
-            <button class="note-add-btn" id="note-add-btn" onclick="addNote()">追加</button>
+          <div class="board-scroll" id="board-scroll">
+            <div class="board-canvas" id="board-canvas"></div>
           </div>
         </div>
       </div>
@@ -765,6 +834,7 @@ let memory = {
   tasks: [], memo: "", aria_self: "", notes: [], peekLog: [],
   shoppingItems: [],
   ganttItems: [],
+  stickyNotes: [],
   char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" }
 };
 let accessToken = null;
@@ -820,6 +890,7 @@ function loadMemLocal() {
         notes:d.notes||[], peekLog:d.peekLog||[],
         shoppingItems:d.shoppingItems||[],
         ganttItems:d.ganttItems||[],
+        stickyNotes:d.stickyNotes||[],
         char_settings:d.char_settings||{name:'アリア',role:'AIコンシェルジュ',personality:'',skills:'',backstory:''}
       };
       driveMemFileId=d.driveMemFileId||null;
@@ -950,9 +1021,10 @@ async function loadMemFromDrive(){
         notes:d.notes||[], peekLog:d.peekLog||[],
         shoppingItems:d.shoppingItems||[],
         ganttItems:d.ganttItems||[],
+        stickyNotes:d.stickyNotes||[],
         char_settings:d.char_settings||memory.char_settings||{name:'アリア',role:'AIコンシェルジュ',personality:'',skills:'',backstory:''}
       };
-      saveMemLocal();renderMemo();renderNotepad();renderShopping();
+      saveMemLocal();renderMemo();renderNotepad();renderShopping();renderBoard();
     }}
   }catch(e){}
 }
@@ -966,6 +1038,7 @@ async function saveToDrive(){
       notes:memory.notes||[],peekLog:memory.peekLog||[],
       shoppingItems:memory.shoppingItems||[],
       ganttItems:memory.ganttItems||[],
+      stickyNotes:memory.stickyNotes||[],
       char_settings:memory.char_settings||{}
     });
     saveLocal();saveMemLocal();setStatus('green','Drive同期済み — '+fmt(Date.now()));
@@ -1001,9 +1074,20 @@ function switchTab(tab){
     document.getElementById('pane-'+t).classList.toggle('active',t===tab);
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
   });
-  if(tab==='notepad'){renderNotepad();maybeAriaPeek();}
+  if(tab==='notepad'){renderNotepad();renderBoard();}
   if(tab==='calendar'){renderCalendar();showCalGreeting();}
   if(tab==='shopping'){renderShopping();}
+}
+
+let currentNoteSubtab='list';
+function switchNoteSubtab(sub){
+  currentNoteSubtab=sub;
+  ['list','board'].forEach(s=>{
+    document.getElementById('subpane-'+s).classList.toggle('active',s===sub);
+    document.getElementById('subtab-'+s).classList.toggle('active',s===sub);
+  });
+  if(sub==='board')renderBoard();
+  if(sub==='list'){renderNotepad();maybeAriaPeek();}
 }
 
 // ===== SHOPPING LIST =====
@@ -1174,12 +1258,25 @@ function addNote(){
   memory.notes.push(note);inp.value='';
   document.getElementById('note-schedule-date').value='';document.getElementById('note-task-due').value='';document.getElementById('note-task-status').value='todo';
   saveMemLocal();renderNotepad();if(accessToken)saveToDrive();
+  maybeAriaPeekOnAdd(note.text);
 }
 
 document.getElementById('note-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addNote();}});
 
 // ARIA PEEK
 async function maybeAriaPeek(){const now=Date.now();if(now-lastPeekTime<3600000)return;if(Math.random()>0.10)return;if(!memory.notes||!memory.notes.length)return;await doAriaPeek();}
+// メモ・計画追加時30%でつぶやく
+async function maybeAriaPeekOnAdd(addedText){
+  if(Math.random()>0.30)return;
+  lastPeekTime=Date.now();
+  const recent=(memory.notes||[]).slice(-5).map(n=>`[${CAT_LABELS[n.category]||'メモ'}] ${n.text}`).join('\n');
+  const context='今追加された内容: '+addedText+'\n\n最近のメモ:\n'+recent;
+  try{
+    const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:100,system:buildSystemPrompt()+'\n\n【特別指示】ユーザーが今メモや計画を追加しました。その内容に反応して、短いひとことをつぶやいてください。応援・共感・驚き・気づきなど自然な口調で50文字以内で。',messages:[{role:'user',content:context}]})});
+    const data=await r.json();const comment=data.content?.[0]?.text?.trim();
+    if(comment){showAriaPeek(comment);if(!memory.peekLog)memory.peekLog=[];memory.peekLog.push({text:comment,ts:Date.now()});if(memory.peekLog.length>100)memory.peekLog=memory.peekLog.slice(-100);saveMemLocal();if(accessToken)saveToDrive();}
+  }catch(e){}
+}
 async function forcePeek(){if(!memory.notes||!memory.notes.length){showToast('メモがまだありません');return;}await doAriaPeek();}
 async function doAriaPeek(){
   lastPeekTime=Date.now();
@@ -1432,6 +1529,7 @@ function saveGanttItem(){
     memory.ganttItems.push({id:Date.now().toString(),title,cat:document.getElementById('gantt-cat-input').value,startMonth,endMonth,note:document.getElementById('gantt-note-input').value.trim(),colorIdx,ts:Date.now()});
   }
   saveMemLocal();if(accessToken)saveToDrive();closeGanttModal();renderCalendar();showToast('期間スケジュールを保存しました');
+  maybeAriaPeekOnAdd(document.getElementById('gantt-title-input').value||'期間スケジュール');
 }
 
 let ganttDetailId=null;
@@ -1550,8 +1648,234 @@ async function sendMsg(){
 function quickSend(text){document.getElementById('user-input').value=text;sendMsg();}
 document.getElementById('user-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
 
+
+// ===== 付箋ボード =====
+let selectedStickyColor = 'yellow';
+const STICKY_COLORS = ['yellow','pink','blue','green','lavender','orange'];
+
+function selectStickyColor(color, el) {
+  selectedStickyColor = color;
+  document.querySelectorAll('.board-color-dot').forEach(d => d.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+function renderBoard() {
+  const canvas = document.getElementById('board-canvas');
+  if(!canvas) return;
+  canvas.innerHTML = '';
+  const stickies = memory.stickyNotes || [];
+  if(!stickies.length) {
+    const empty = document.createElement('div');
+    empty.className = 'board-empty';
+    empty.innerHTML = '付箋がありません。<br>「+ 付箋を追加」ボタンか、<br>ボードをダブルクリックして追加できます！';
+    canvas.appendChild(empty);
+  }
+  stickies.forEach(s => renderStickyEl(canvas, s));
+  // ダブルクリックで新規追加
+  canvas.ondblclick = (e) => {
+    if(e.target === canvas) {
+      const scroll = document.getElementById('board-scroll');
+      const x = e.clientX - canvas.getBoundingClientRect().left;
+      const y = e.clientY - canvas.getBoundingClientRect().top;
+      addStickyNote(x - 70, y - 40);
+    }
+  };
+}
+
+function addStickyNote(x, y) {
+  const scroll = document.getElementById('board-scroll');
+  // デフォルト位置：画面中央付近にランダム分散
+  if(x === undefined) {
+    const sw = scroll ? scroll.clientWidth : 400;
+    const sh = scroll ? scroll.clientHeight : 300;
+    x = 40 + Math.random() * Math.max(sw - 200, 200);
+    y = 40 + Math.random() * Math.max(sh - 160, 160);
+  }
+  if(!memory.stickyNotes) memory.stickyNotes = [];
+  const note = {
+    id: Date.now().toString() + Math.random().toString(36).slice(2),
+    text: '',
+    color: selectedStickyColor,
+    x: Math.max(0, Math.round(x)),
+    y: Math.max(0, Math.round(y)),
+    ts: Date.now(),
+  };
+  memory.stickyNotes.push(note);
+  saveMemLocal(); if(accessToken) saveToDrive();
+  const canvas = document.getElementById('board-canvas');
+  if(!canvas) return;
+  // 空表示を消す
+  const empty = canvas.querySelector('.board-empty');
+  if(empty) empty.remove();
+  renderStickyEl(canvas, note, true);
+  maybeAriaPeekOnAdd('付箋を追加しました');
+}
+
+function renderStickyEl(canvas, note, focusNow) {
+  const el = document.createElement('div');
+  el.className = 'sticky-note sticky-' + (note.color || 'yellow');
+  el.dataset.id = note.id;
+  el.style.left = note.x + 'px';
+  el.style.top  = note.y + 'px';
+
+  // ヘッダー（編集・削除ボタン）
+  const header = document.createElement('div');
+  header.className = 'sticky-note-header';
+
+  // カラー変更ドロップダウン
+  const colorBtn = document.createElement('button');
+  colorBtn.className = 'sticky-note-btn';
+  colorBtn.title = '色を変更';
+  colorBtn.innerHTML = '🎨';
+  colorBtn.onclick = (e) => { e.stopPropagation(); cycleStickyColor(note.id, el); };
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'sticky-note-btn';
+  editBtn.title = '編集';
+  editBtn.innerHTML = '✎';
+  editBtn.onclick = (e) => { e.stopPropagation(); startStickyEdit(note.id, el, textEl, dateEl); };
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'sticky-note-btn del';
+  delBtn.title = '削除';
+  delBtn.innerHTML = '×';
+  delBtn.onclick = (e) => { e.stopPropagation(); deleteStickyNote(note.id); };
+
+  header.appendChild(colorBtn); header.appendChild(editBtn); header.appendChild(delBtn);
+  el.appendChild(header);
+
+  // 本文
+  const textEl = document.createElement('div');
+  textEl.className = 'sticky-note-text';
+  textEl.textContent = note.text || '';
+  el.appendChild(textEl);
+
+  // 日付
+  const dateEl = document.createElement('div');
+  dateEl.className = 'sticky-note-date';
+  dateEl.textContent = fmtNoteDate(note.ts);
+  el.appendChild(dateEl);
+
+  canvas.appendChild(el);
+
+  // ドラッグ
+  makeDraggable(el, note);
+
+  // ダブルクリックで編集
+  el.addEventListener('dblclick', e => {
+    e.stopPropagation();
+    startStickyEdit(note.id, el, textEl, dateEl);
+  });
+
+  if(focusNow) startStickyEdit(note.id, el, textEl, dateEl);
+}
+
+function cycleStickyColor(id, el) {
+  const idx = memory.stickyNotes.findIndex(s => s.id === id);
+  if(idx < 0) return;
+  const cur = memory.stickyNotes[idx].color || 'yellow';
+  const next = STICKY_COLORS[(STICKY_COLORS.indexOf(cur) + 1) % STICKY_COLORS.length];
+  memory.stickyNotes[idx].color = next;
+  STICKY_COLORS.forEach(c => el.classList.remove('sticky-' + c));
+  el.classList.add('sticky-' + next);
+  saveMemLocal(); if(accessToken) saveToDrive();
+}
+
+function startStickyEdit(id, el, textEl, dateEl) {
+  if(el.querySelector('.sticky-note-textarea')) return;
+  el.classList.add('editing');
+  textEl.style.display = 'none';
+  dateEl.style.display = 'none';
+
+  const area = document.createElement('textarea');
+  area.className = 'sticky-note-textarea';
+  const idx = memory.stickyNotes.findIndex(s => s.id === id);
+  area.value = idx >= 0 ? (memory.stickyNotes[idx].text || '') : '';
+  area.placeholder = 'メモを入力...';
+  el.insertBefore(area, dateEl);
+  area.focus(); area.setSelectionRange(area.value.length, area.value.length);
+
+  // 自動リサイズ
+  const autoResize = () => { area.style.height='auto'; area.style.height=(area.scrollHeight)+'px'; };
+  area.addEventListener('input', autoResize);
+  setTimeout(autoResize, 0);
+
+  const save = () => {
+    const newText = area.value;
+    if(idx >= 0) {
+      memory.stickyNotes[idx].text = newText;
+      textEl.textContent = newText;
+    }
+    area.remove();
+    textEl.style.display = '';
+    dateEl.style.display = '';
+    el.classList.remove('editing');
+    saveMemLocal(); if(accessToken) saveToDrive();
+  };
+
+  area.addEventListener('blur', save);
+  area.addEventListener('keydown', e => {
+    if(e.key === 'Escape') { save(); }
+    // Ctrl+Enter or Cmd+Enter でも保存
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); save(); }
+  });
+}
+
+function deleteStickyNote(id) {
+  memory.stickyNotes = (memory.stickyNotes || []).filter(s => s.id !== id);
+  saveMemLocal(); if(accessToken) saveToDrive();
+  renderBoard();
+}
+
+function makeDraggable(el, note) {
+  let startX, startY, origX, origY, dragging = false;
+  const onDown = (e) => {
+    if(el.classList.contains('editing')) return;
+    if(e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    dragging = true;
+    const isTouch = e.type === 'touchstart';
+    const cx = isTouch ? e.touches[0].clientX : e.clientX;
+    const cy = isTouch ? e.touches[0].clientY : e.clientY;
+    startX = cx; startY = cy;
+    origX = note.x; origY = note.y;
+    el.classList.add('dragging');
+    el.style.zIndex = 100;
+  };
+  const onMove = (e) => {
+    if(!dragging) return;
+    const isTouch = e.type === 'touchmove';
+    const cx = isTouch ? e.touches[0].clientX : e.clientX;
+    const cy = isTouch ? e.touches[0].clientY : e.clientY;
+    const nx = Math.max(0, origX + (cx - startX));
+    const ny = Math.max(0, origY + (cy - startY));
+    el.style.left = nx + 'px';
+    el.style.top  = ny + 'px';
+  };
+  const onUp = (e) => {
+    if(!dragging) return;
+    dragging = false;
+    el.classList.remove('dragging');
+    // save new pos
+    const idx = memory.stickyNotes.findIndex(s => s.id === note.id);
+    if(idx >= 0) {
+      memory.stickyNotes[idx].x = parseInt(el.style.left) || 0;
+      memory.stickyNotes[idx].y = parseInt(el.style.top)  || 0;
+      note.x = memory.stickyNotes[idx].x;
+      note.y = memory.stickyNotes[idx].y;
+    }
+    saveMemLocal(); if(accessToken) saveToDrive();
+  };
+  el.addEventListener('mousedown', onDown);
+  el.addEventListener('touchstart', onDown, {passive:false});
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive:false});
+  document.addEventListener('mouseup', onUp);
+  document.addEventListener('touchend', onUp);
+}
+
 // ===== INIT =====
-loadLocal();loadMemLocal();renderAll();renderMemo();renderNotepad();renderShopping();updateCount();
+loadLocal();loadMemLocal();renderAll();renderMemo();renderNotepad();renderShopping();renderBoard();updateCount();
 showOverlay();
 if(!isMobile())document.getElementById('menu-btn').style.display='none';
 
