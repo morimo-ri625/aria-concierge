@@ -461,7 +461,7 @@ body {
 .sticky-note-header { display: flex; align-items: center; justify-content: flex-end; gap: 3px; opacity: 0; transition: opacity 0.15s; }
 .sticky-note:hover .sticky-note-header { opacity: 1; }
 .sticky-note.editing .sticky-note-header { opacity: 1; }
-.sticky-note-btn { width: 18px; height: 18px; border-radius: 4px; border: none; background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.45); font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; line-height: 1; transition: background 0.12s; }
+.sticky-note-btn { width: 26px; height: 26px; border-radius: 6px; border: none; background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.50); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; line-height: 1; transition: background 0.12s; }
 .sticky-note-btn:hover { background: rgba(0,0,0,0.18); color: rgba(0,0,0,0.8); }
 .sticky-note-btn.del:hover { background: rgba(200,50,50,0.15); color: #c93535; }
 .sticky-note-text { font-size: 12px; line-height: 1.65; color: #2a2440; flex: 1; white-space: pre-wrap; min-height: 40px; }
@@ -636,8 +636,7 @@ body {
           </div>
           <div class="shopping-items-area" id="shopping-items-area"></div>
           <div class="shopping-input-area">
-            <input class="shopping-input" id="shopping-input" placeholder="商品名を入力...">
-            <button class="shopping-add-btn" onclick="addShoppingItem()">+</button>
+            <button class="shopping-add-btn" onclick="addShoppingItem()" title="空の行を追加">+</button>
           </div>
         </div>
       </div>
@@ -1087,7 +1086,7 @@ function switchNoteSubtab(sub){
     document.getElementById('subtab-'+s).classList.toggle('active',s===sub);
   });
   if(sub==='board')renderBoard();
-  if(sub==='list'){renderNotepad();maybeAriaPeek();}
+  if(sub==='list'){renderNotepad();}
 }
 
 // ===== SHOPPING LIST =====
@@ -1111,29 +1110,61 @@ function renderShopping(){
   if(shoppingFilter==='unchecked')filtered=items.filter(i=>!i.checked);
   if(shoppingFilter==='checked')filtered=items.filter(i=>i.checked);
   if(!filtered.length){
-    area.innerHTML='<div class="shopping-empty">アイテムがありません。<br>下の入力欄から追加してみましょう！</div>';
+    area.innerHTML='<div class="shopping-empty">アイテムがありません。<br>＋ボタンで行を追加してみましょう！</div>';
     return;
   }
   filtered.forEach((item)=>{
     const origIdx=items.indexOf(item);
     const div=document.createElement('div');
     div.className='shopping-item'+(item.checked?' checked':'');
+
+    // チェックボックス
     const chk=document.createElement('div');chk.className='shopping-check';
     chk.onclick=()=>{ memory.shoppingItems[origIdx].checked=!memory.shoppingItems[origIdx].checked;saveMemLocal();renderShopping();if(accessToken)saveToDrive(); };
-    const name=document.createElement('span');name.className='shopping-item-name';name.textContent=item.name;
+
+    // 名前（クリックでインライン編集）
+    const name=document.createElement('span');name.className='shopping-item-name';
+    name.textContent=item.name||'';
+    name.title='クリックして編集';
+    name.style.cursor='text';
+    name.onclick=(e)=>{
+      e.stopPropagation();
+      if(div.querySelector('.shopping-item-input'))return;
+      const inp=document.createElement('input');
+      inp.className='shopping-item-input';
+      inp.value=item.name||'';
+      inp.placeholder='商品名を入力...';
+      inp.style.cssText='flex:1;font-size:13px;padding:2px 6px;border:1px solid var(--purple);border-radius:5px;background:var(--bg-card);color:var(--text-primary);font-family:inherit;outline:none;min-width:0;';
+      name.replaceWith(inp);
+      inp.focus();inp.select();
+      const save=()=>{
+        const val=inp.value.trim();
+        memory.shoppingItems[origIdx].name=val;
+        saveMemLocal();renderShopping();if(accessToken)saveToDrive();
+      };
+      inp.addEventListener('blur',save);
+      inp.addEventListener('keydown',e2=>{
+        if(e2.key==='Enter'){e2.preventDefault();inp.blur();}
+        if(e2.key==='Escape'){inp.value=item.name||'';inp.blur();}
+      });
+    };
+
     const del=document.createElement('button');del.className='shopping-item-del';del.innerHTML='×';del.title='削除';
     del.onclick=()=>{ memory.shoppingItems.splice(origIdx,1);saveMemLocal();renderShopping();if(accessToken)saveToDrive(); };
     div.appendChild(chk);div.appendChild(name);div.appendChild(del);
     area.appendChild(div);
+
+    // 空行は自動でフォーカス
+    if(!item.name){
+      setTimeout(()=>{ const n=div.querySelector('.shopping-item-name');if(n)n.click(); },50);
+    }
   });
 }
 
 function addShoppingItem(){
-  const inp=document.getElementById('shopping-input');
-  const name=inp.value.trim(); if(!name)return;
   if(!memory.shoppingItems)memory.shoppingItems=[];
-  memory.shoppingItems.push({id:Date.now().toString(),name,checked:false,ts:Date.now()});
-  inp.value='';saveMemLocal();renderShopping();if(accessToken)saveToDrive();
+  memory.shoppingItems.push({id:Date.now().toString(),name:'',checked:false,ts:Date.now()});
+  saveMemLocal();renderShopping();if(accessToken)saveToDrive();
 }
 
 function clearCheckedShopping(){
@@ -1144,7 +1175,6 @@ function clearCheckedShopping(){
   showToast('チェック済みを削除しました');
 }
 
-document.getElementById('shopping-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addShoppingItem();}});
 
 // ===== NOTEPAD =====
 let noteFilter='all';
@@ -1739,7 +1769,7 @@ function renderStickyEl(canvas, note, focusNow) {
   delBtn.className = 'sticky-note-btn del';
   delBtn.title = '削除';
   delBtn.innerHTML = '×';
-  delBtn.onclick = (e) => { e.stopPropagation(); deleteStickyNote(note.id); };
+  delBtn.onclick = (e) => { e.stopPropagation(); if(!confirm('この付箋を削除しますか？'))return; deleteStickyNote(note.id); };
 
   header.appendChild(colorBtn); header.appendChild(editBtn); header.appendChild(delBtn);
   el.appendChild(header);
