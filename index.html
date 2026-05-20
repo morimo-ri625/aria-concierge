@@ -86,7 +86,7 @@ body {
 
 /* ===== MAIN TABS ===== */
 .main-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-elevated); }
-.main-tab { flex: 1; font-size: 12px; color: var(--text-muted); background: none; border: none; padding: 10px 0 8px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Noto Sans JP', sans-serif; font-weight: 400; }
+.main-tab { flex: 1; font-size: 11px; color: var(--text-muted); background: none; border: none; padding: 10px 2px 8px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Noto Sans JP', sans-serif; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .main-tab.active { color: var(--purple-bright); border-bottom-color: var(--purple); font-weight: 600; }
 .main-tab:hover:not(.active) { color: var(--text-secondary); }
 .tab-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
@@ -469,11 +469,43 @@ body {
 .sticky-note-date { font-size: 9px; color: rgba(0,0,0,0.3); text-align: right; margin-top: 4px; flex-shrink: 0; }
 .board-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: var(--text-muted); font-size: 13px; line-height: 2.2; pointer-events: none; }
 .note-subtabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg-elevated); flex-shrink: 0; }
-.note-subtab { font-size: 12px; color: var(--text-muted); background: none; border: none; padding: 7px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.note-subtab { flex: 1; font-size: 11px; color: var(--text-muted); background: none; border: none; padding: 7px 8px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; }
 .note-subtab.active { color: var(--purple-bright); border-bottom-color: var(--purple); font-weight: 600; }
 .note-subtab:hover:not(.active) { color: var(--text-secondary); }
 .note-subpane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
 .note-subpane.active { display: flex; }
+
+/* ===== 今日できたこと ===== */
+.achiev-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.achiev-toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-elevated); }
+.achiev-toolbar-title { font-size: 12px; color: var(--text-secondary); flex: 1; }
+.achiev-scroll { flex: 1; overflow-y: auto; padding: 10px 14px; display: flex; flex-direction: column; gap: 0; overscroll-behavior: contain; }
+.achiev-day-block { display: flex; flex-direction: column; margin-bottom: 8px; }
+.achiev-day-header { display: flex; align-items: center; gap: 6px; padding: 4px 0 4px; position: relative; }
+.achiev-day-label { font-size: 11px; font-weight: 700; color: var(--purple-bright); background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: 20px; padding: 2px 10px; cursor: pointer; transition: all 0.15s; }
+.achiev-day-label:hover { background: var(--purple-dim); }
+.achiev-day-label-input { font-size: 11px; font-weight: 700; color: var(--purple-bright); border: 1px solid var(--purple); border-radius: 20px; padding: 2px 10px; background: var(--bg-card); outline: none; font-family: 'Noto Sans JP', sans-serif; min-width: 80px; }
+.achiev-day-count { font-size: 10px; color: var(--text-muted); }
+.achiev-day-add { font-size: 11px; color: var(--purple-bright); background: none; border: 1px solid var(--purple-border); border-radius: 6px; padding: 2px 8px; cursor: pointer; margin-left: auto; transition: all 0.15s; }
+.achiev-day-add:hover { background: var(--purple-bg); }
+.achiev-day-del { font-size: 10px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+.achiev-day-del:hover { color: var(--red); background: var(--red-bg); }
+.achiev-items { display: flex; flex-direction: column; gap: 3px; padding-left: 12px; border-left: 2px solid var(--border); margin-left: 5px; padding-bottom: 4px; }
+.achiev-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.15s; }
+.achiev-item:hover { border-color: var(--green); background: var(--green-bg); }
+.achiev-item-check { width: 16px; height: 16px; border-radius: 50%; background: var(--green); flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.achiev-item-check::after { content: ''; display: block; width: 5px; height: 8px; border-right: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(45deg) translate(-1px,-1px); }
+.achiev-item-text { flex: 1; font-size: 13px; color: var(--text-primary); line-height: 1.5; word-break: break-word; white-space: pre-wrap; cursor: text; }
+.achiev-item-text-input { flex: 1; font-size: 13px; color: var(--text-primary); line-height: 1.5; border: 1px solid var(--purple); border-radius: 5px; padding: 2px 6px; background: var(--bg-card); outline: none; resize: none; font-family: 'Noto Sans JP', sans-serif; min-height: 24px; }
+.achiev-item-del { width: 18px; height: 18px; background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; flex-shrink: 0; padding: 0; opacity: 0; transition: opacity 0.15s; }
+.achiev-item:hover .achiev-item-del { opacity: 1; }
+.achiev-item-del:hover { color: var(--red); background: var(--red-bg); }
+.achiev-empty { text-align: center; color: var(--text-muted); font-size: 13px; margin: auto; padding: 40px 20px; line-height: 2.2; }
+.achiev-input-area { padding: 8px 14px; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--bg-elevated); display: flex; gap: 8px; align-items: center; }
+.achiev-input { flex: 1; font-size: 13px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-family: 'Noto Sans JP', sans-serif; }
+.achiev-input:focus { outline: none; border-color: var(--purple); }
+.achiev-add-btn { padding: 0 16px; border-radius: 10px; border: none; background: var(--green); color: white; font-size: 13px; font-weight: 600; cursor: pointer; height: 40px; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+.achiev-add-btn:hover { background: #0a7a4a; }
 </style>
 </head>
 <body>
@@ -499,9 +531,10 @@ body {
     <div class="main">
       <div class="main-tabs">
         <button class="main-tab active" id="tab-notepad" onclick="switchTab('notepad')">📓 メモ帳</button>
-        <button class="main-tab" id="tab-shopping" onclick="switchTab('shopping')">🛒 買い物</button>
         <button class="main-tab" id="tab-chat" onclick="switchTab('chat')">💬 チャット</button>
         <button class="main-tab" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+        <button class="main-tab" id="tab-plan" onclick="switchTab('plan')">📊 計画</button>
+        <button class="main-tab" id="tab-achiev" onclick="switchTab('achiev')">✅ できた</button>
       </div>
 
       <!-- CHAT PANE -->
@@ -555,7 +588,8 @@ body {
         <!-- サブタブ -->
         <div class="note-subtabs">
           <button class="note-subtab active" id="subtab-list" onclick="switchNoteSubtab('list')">📋 リスト</button>
-          <button class="note-subtab" id="subtab-board" onclick="switchNoteSubtab('board')">📌 付箋ボード</button>
+          <button class="note-subtab" id="subtab-board" onclick="switchNoteSubtab('board')">📌 付箋</button>
+          <button class="note-subtab" id="subtab-shopping" onclick="switchNoteSubtab('shopping')">🛒 買い物</button>
         </div>
 
         <!-- リストサブペイン -->
@@ -621,22 +655,22 @@ body {
             <div class="board-canvas" id="board-canvas"></div>
           </div>
         </div>
-      </div>
 
-      <!-- SHOPPING PANE -->
-      <div class="tab-pane" id="pane-shopping">
-        <div class="shopping-list-container">
-          <div class="shopping-list-header">
-            <span class="shopping-list-title">🛒 買い物リスト</span>
-            <span class="shopping-checked-count" id="shopping-checked-count"></span>
-            <button class="shopping-filter-btn active" id="shopping-filter-all" onclick="setShoppingFilter('all')">すべて</button>
-            <button class="shopping-filter-btn" id="shopping-filter-unchecked" onclick="setShoppingFilter('unchecked')">未チェック</button>
-            <button class="shopping-filter-btn" id="shopping-filter-checked" onclick="setShoppingFilter('checked')">チェック済み</button>
-            <button class="notepad-sort-btn" onclick="clearCheckedShopping()" title="チェック済みを削除" style="margin-left:4px;">🗑️</button>
-          </div>
-          <div class="shopping-items-area" id="shopping-items-area"></div>
-          <div class="shopping-input-area">
-            <button class="shopping-add-btn" onclick="addShoppingItem()" title="空の行を追加">+</button>
+        <!-- 買い物サブペイン -->
+        <div class="note-subpane" id="subpane-shopping">
+          <div class="shopping-list-container">
+            <div class="shopping-list-header">
+              <span class="shopping-list-title">🛒 買い物リスト</span>
+              <span class="shopping-checked-count" id="shopping-checked-count"></span>
+              <button class="shopping-filter-btn active" id="shopping-filter-all" onclick="setShoppingFilter('all')">すべて</button>
+              <button class="shopping-filter-btn" id="shopping-filter-unchecked" onclick="setShoppingFilter('unchecked')">未チェック</button>
+              <button class="shopping-filter-btn" id="shopping-filter-checked" onclick="setShoppingFilter('checked')">チェック済み</button>
+              <button class="notepad-sort-btn" onclick="clearCheckedShopping()" title="チェック済みを削除" style="margin-left:4px;">🗑️</button>
+            </div>
+            <div class="shopping-items-area" id="shopping-items-area"></div>
+            <div class="shopping-input-area">
+              <button class="shopping-add-btn" onclick="addShoppingItem()" title="空の行を追加">+</button>
+            </div>
           </div>
         </div>
       </div>
@@ -656,11 +690,41 @@ body {
             <button class="cal-view-btn active" id="calview-month" onclick="setCalView('month')">月</button>
             <button class="cal-view-btn" id="calview-year" onclick="setCalView('year')">年</button>
             <button class="cal-view-btn" id="calview-week" onclick="setCalView('week')">週</button>
-            <button class="cal-view-btn" id="calview-gantt" onclick="setCalView('gantt')">計画</button>
           </div>
           <button class="cal-today-btn" onclick="calToday()">今日</button>
         </div>
         <div class="cal-body" id="cal-body"></div>
+      </div>
+
+      <!-- PLAN PANE (ガントチャート) -->
+      <div class="tab-pane" id="pane-plan">
+        <div class="cal-gantt-container">
+          <div class="cal-gantt-toolbar">
+            <span class="cal-gantt-toolbar-title" id="plan-toolbar-text">年間スケジュールを管理できます</span>
+            <button class="cal-nav-btn" onclick="planNav(-1)" style="margin-left:4px;">&#x2039;</button>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);padding:0 4px;" id="plan-year-label"></span>
+            <button class="cal-nav-btn" onclick="planNav(1)">&#x203A;</button>
+            <button class="cal-gantt-add-btn" onclick="openGanttModal()">+ 追加</button>
+          </div>
+          <div class="cal-gantt-scroll" id="plan-body"></div>
+        </div>
+      </div>
+
+      <!-- ACHIEV PANE (今日できたこと) -->
+      <div class="tab-pane" id="pane-achiev">
+        <div class="achiev-container">
+          <div class="achiev-toolbar">
+            <span class="achiev-toolbar-title">日付ごとに達成したことを積み上げよう</span>
+            <button class="achiev-day-add" onclick="addAchievDay()">+ 日付を追加</button>
+          </div>
+          <div class="achiev-scroll" id="achiev-scroll">
+            <div class="achiev-empty" id="achiev-empty">まだ記録がありません。<br>「+ 日付を追加」から今日の達成を記録しましょう！</div>
+          </div>
+          <div class="achiev-input-area">
+            <input class="achiev-input" id="achiev-input" placeholder="できたことを入力して Enter（今日の日付に追加）">
+            <button class="achiev-add-btn" onclick="quickAddAchiev()">追加</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -798,7 +862,9 @@ body {
     </div>
     <button class="drawer-btn" id="login-drawer-btn" onclick="signIn()">Googleでログイン</button>
     <button class="drawer-btn" onclick="switchTab('notepad');closeDrawer()">メモ帳を開く</button>
-    <button class="drawer-btn" onclick="switchTab('shopping');closeDrawer()">買い物リスト</button>
+    <button class="drawer-btn" onclick="switchNoteSubtab('shopping');switchTab('notepad');closeDrawer()">買い物リスト</button>
+    <button class="drawer-btn" onclick="switchTab('achiev');closeDrawer()">✅ できたこと</button>
+    <button class="drawer-btn" onclick="switchTab('plan');closeDrawer()">📊 計画</button>
     <button class="drawer-btn danger" onclick="clearHistory();closeDrawer()">履歴を消去</button>
     <button class="drawer-btn" onclick="openSettingsModal();closeDrawer()">キャラクター設定</button>
     <button class="drawer-btn" onclick="openDevModal();closeDrawer()">開発者メニュー</button>
@@ -834,6 +900,7 @@ let memory = {
   shoppingItems: [],
   ganttItems: [],
   stickyNotes: [],
+  achievDays: [],
   char_settings: { name: "アリア", role: "AIコンシェルジュ", personality: "", skills: "", backstory: "" }
 };
 let accessToken = null;
@@ -890,6 +957,7 @@ function loadMemLocal() {
         shoppingItems:d.shoppingItems||[],
         ganttItems:d.ganttItems||[],
         stickyNotes:d.stickyNotes||[],
+        achievDays:d.achievDays||[],
         char_settings:d.char_settings||{name:'アリア',role:'AIコンシェルジュ',personality:'',skills:'',backstory:''}
       };
       driveMemFileId=d.driveMemFileId||null;
@@ -1021,6 +1089,7 @@ async function loadMemFromDrive(){
         shoppingItems:d.shoppingItems||[],
         ganttItems:d.ganttItems||[],
         stickyNotes:d.stickyNotes||[],
+        achievDays:d.achievDays||[],
         char_settings:d.char_settings||memory.char_settings||{name:'アリア',role:'AIコンシェルジュ',personality:'',skills:'',backstory:''}
       };
       saveMemLocal();renderMemo();renderNotepad();renderShopping();renderBoard();
@@ -1038,6 +1107,7 @@ async function saveToDrive(){
       shoppingItems:memory.shoppingItems||[],
       ganttItems:memory.ganttItems||[],
       stickyNotes:memory.stickyNotes||[],
+      achievDays:memory.achievDays||[],
       char_settings:memory.char_settings||{}
     });
     saveLocal();saveMemLocal();setStatus('green','Drive同期済み — '+fmt(Date.now()));
@@ -1069,24 +1139,30 @@ function clearHistory(){if(!confirm('会話履歴を消去しますか？'))retu
 let currentTab='notepad';
 function switchTab(tab){
   currentTab=tab;
-  ['notepad','chat','calendar','shopping'].forEach(t=>{
-    document.getElementById('pane-'+t).classList.toggle('active',t===tab);
-    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+  ['notepad','chat','calendar','plan','achiev'].forEach(t=>{
+    const pane=document.getElementById('pane-'+t);
+    const btn=document.getElementById('tab-'+t);
+    if(pane)pane.classList.toggle('active',t===tab);
+    if(btn)btn.classList.toggle('active',t===tab);
   });
   if(tab==='notepad'){renderNotepad();renderBoard();}
   if(tab==='calendar'){renderCalendar();showCalGreeting();}
-  if(tab==='shopping'){renderShopping();}
+  if(tab==='plan'){renderPlanTab();}
+  if(tab==='achiev'){renderAchiev();}
 }
 
 let currentNoteSubtab='list';
 function switchNoteSubtab(sub){
   currentNoteSubtab=sub;
-  ['list','board'].forEach(s=>{
-    document.getElementById('subpane-'+s).classList.toggle('active',s===sub);
-    document.getElementById('subtab-'+s).classList.toggle('active',s===sub);
+  ['list','board','shopping'].forEach(s=>{
+    const p=document.getElementById('subpane-'+s);
+    const b=document.getElementById('subtab-'+s);
+    if(p)p.classList.toggle('active',s===sub);
+    if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='board')renderBoard();
   if(sub==='list'){renderNotepad();}
+  if(sub==='shopping'){renderShopping();}
 }
 
 // ===== SHOPPING LIST =====
@@ -1357,14 +1433,13 @@ let calEventStore={};
 
 function setCalView(v){
   calView=v;
-  ['month','year','week','gantt'].forEach(x=>{const b=document.getElementById('calview-'+x);if(b)b.classList.toggle('active',x===v);});
+  ['month','year','week'].forEach(x=>{const b=document.getElementById('calview-'+x);if(b)b.classList.toggle('active',x===v);});
   renderCalendar();
 }
 function calNav(dir){
   if(calView==='month')calAnchor=new Date(calAnchor.getFullYear(),calAnchor.getMonth()+dir,1);
   else if(calView==='year')calAnchor=new Date(calAnchor.getFullYear()+dir,0,1);
   else if(calView==='week')calAnchor=new Date(calAnchor.getTime()+dir*7*86400000);
-  else if(calView==='gantt')calAnchor=new Date(calAnchor.getFullYear()+dir,0,1);
   renderCalendar();
 }
 function calToday(){calAnchor=new Date();renderCalendar();}
@@ -1373,7 +1448,6 @@ function renderCalendar(){
   if(calView==='month')renderCalMonth(body);
   else if(calView==='year')renderCalYear(body);
   else if(calView==='week')renderCalWeek(body);
-  else if(calView==='gantt')renderCalGantt(body);
 }
 
 function buildEventMap(){
@@ -1583,17 +1657,15 @@ function closeGanttDetail(){document.getElementById('gantt-detail-modal').classL
 function editGanttItem(){if(!ganttDetailId)return;closeGanttDetail();openGanttModal(ganttDetailId);}
 function deleteGanttItem(){if(!ganttDetailId)return;if(!confirm('この期間スケジュールを削除しますか？'))return;memory.ganttItems=(memory.ganttItems||[]).filter(g=>g.id!==ganttDetailId);saveMemLocal();if(accessToken)saveToDrive();closeGanttDetail();renderCalendar();showToast('削除しました');}
 
-function renderCalGantt(body){
-  const y=calAnchor.getFullYear();
-  document.getElementById('cal-title').textContent=y+'年 年間スケジュール';
-  const wrap=document.createElement('div');wrap.className='cal-gantt-container';
-  const toolbar=document.createElement('div');toolbar.className='cal-gantt-toolbar';
-  const tl=document.createElement('span');tl.className='cal-gantt-toolbar-title';tl.textContent=y+'年の期間スケジュールを管理できます';
-  const addBtn=document.createElement('button');addBtn.className='cal-gantt-add-btn';addBtn.textContent='+ 追加';addBtn.onclick=()=>openGanttModal();
-  toolbar.appendChild(tl);toolbar.appendChild(addBtn);wrap.appendChild(toolbar);
-  const scroll=document.createElement('div');scroll.className='cal-gantt-scroll';
+// ===== PLAN TAB =====
+let planYear = new Date().getFullYear();
+function planNav(dir){ planYear += dir; renderPlanTab(); }
+
+function renderPlanTab(){
+  const body = document.getElementById('plan-body'); if(!body)return;
+  const y = planYear;
+  const labelEl = document.getElementById('plan-year-label'); if(labelEl) labelEl.textContent = y+'年';
   const grid=document.createElement('div');grid.className='cal-gantt-grid';
-  // header
   const headerRow=document.createElement('div');headerRow.className='cal-gantt-header';
   const labelHead=document.createElement('div');labelHead.className='cal-gantt-label-col';labelHead.textContent='スケジュール';
   headerRow.appendChild(labelHead);
@@ -1612,36 +1684,165 @@ function renderCalGantt(body){
       label.innerHTML=`<div style="font-size:11px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(item.title)}</div><div style="font-size:9px;color:var(--text-muted);">${GANTT_CAT_LABELS[item.cat]||'その他'}</div>`;
       row.appendChild(label);
       const cells=document.createElement('div');cells.className='cal-gantt-cells';
-      // today line position calculation
-      let todayLineX=null;
       const color=GANTT_COLORS[item.colorIdx||0];
-      // parse start/end in context of this year
       const parseYM=s=>{const[fy,fm]=s.split('-').map(Number);return{y:fy,m:fm};};
       const start=parseYM(item.startMonth);const end=parseYM(item.endMonth);
-      // clamp to this year
       const clampedStartM=start.y<y?1:start.m;
       const clampedEndM=end.y>y?12:end.m;
       for(let m=1;m<=12;m++){
         const cell=document.createElement('div');const ym=y+'-'+String(m).padStart(2,'0');cell.className='cal-gantt-cell'+(ym===currentYM?' current-month':'');
-        // today line
         if(now.getFullYear()===y&&now.getMonth()+1===m){
           const dayFrac=(now.getDate()-1)/new Date(y,m,0).getDate();
           const line=document.createElement('div');line.className='cal-gantt-today-line';line.style.left=dayFrac*100+'%';cell.appendChild(line);}
         cells.appendChild(cell);
       }
-      // render bar spanning from clampedStartM to clampedEndM
-      // use absolute positioning across the entire row
       const barWrap=document.createElement('div');barWrap.className='cal-gantt-bar-wrap';barWrap.style.cssText='position:absolute;top:50%;transform:translateY(-50%);left:0;right:0;height:24px;pointer-events:none;';
       const colW=100/12;const leftPct=(clampedStartM-1)*colW;const widthPct=(clampedEndM-clampedStartM+1)*colW;
       const bar=document.createElement('div');bar.className='cal-gantt-bar';
       bar.style.cssText=`left:calc(${leftPct}% + 2px);width:calc(${widthPct}% - 4px);background:${color.bg};color:${color.text};`;
       bar.textContent=item.title;bar.onclick=()=>openGanttDetail(item.id);barWrap.appendChild(bar);
-      // position barWrap relative to cells container
       cells.style.position='relative';cells.appendChild(barWrap);
       row.appendChild(cells);rows.appendChild(row);
     });
   }
-  grid.appendChild(rows);scroll.appendChild(grid);wrap.appendChild(scroll);body.innerHTML='';body.appendChild(wrap);
+  grid.appendChild(rows);body.innerHTML='';body.appendChild(grid);
+}
+
+
+// ===== 今日できたこと =====
+// memory.achievDays = [ { id, label, ts, items:[{id,text,ts}] }, ... ]
+
+function todayLabel(){
+  const d=new Date();const days=['日','月','火','水','木','金','土'];
+  return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+'（'+days[d.getDay()]+'）';
+}
+
+function renderAchiev(){
+  const scroll=document.getElementById('achiev-scroll');if(!scroll)return;
+  scroll.innerHTML='';
+  if(!memory.achievDays)memory.achievDays=[];
+  const days=[...memory.achievDays].sort((a,b)=>b.ts-a.ts);
+  if(!days.length){
+    scroll.innerHTML='<div class="achiev-empty">まだ記録がありません。<br>「+ 日付を追加」から今日の達成を記録しましょう！</div>';
+    return;
+  }
+  days.forEach(day=>{
+    const block=document.createElement('div');block.className='achiev-day-block';
+
+    // header
+    const header=document.createElement('div');header.className='achiev-day-header';
+    const labelBtn=document.createElement('span');labelBtn.className='achiev-day-label';labelBtn.textContent=day.label;
+    labelBtn.title='クリックして編集';
+    labelBtn.onclick=()=>startAchievDayEdit(day.id, labelBtn);
+    const countSpan=document.createElement('span');countSpan.className='achiev-day-count';countSpan.textContent=(day.items||[]).length+'件';
+    const addBtn=document.createElement('button');addBtn.className='achiev-day-add';addBtn.textContent='+ 追加';
+    addBtn.onclick=()=>addAchievItem(day.id);
+    const delBtn=document.createElement('button');delBtn.className='achiev-day-del';delBtn.title='この日付ブロックを削除';delBtn.innerHTML='🗑️';
+    delBtn.onclick=()=>{if(!confirm('この日付ブロックをすべて削除しますか？'))return;memory.achievDays=(memory.achievDays||[]).filter(d=>d.id!==day.id);saveMemLocal();if(accessToken)saveToDrive();renderAchiev();};
+    header.appendChild(labelBtn);header.appendChild(countSpan);header.appendChild(addBtn);header.appendChild(delBtn);
+    block.appendChild(header);
+
+    // items
+    const itemsWrap=document.createElement('div');itemsWrap.className='achiev-items';
+    (day.items||[]).forEach(item=>{
+      const row=document.createElement('div');row.className='achiev-item';
+      const chk=document.createElement('div');chk.className='achiev-item-check';
+      const textEl=document.createElement('span');textEl.className='achiev-item-text';textEl.textContent=item.text;
+      textEl.title='クリックして編集';
+      textEl.onclick=()=>startAchievItemEdit(day.id, item.id, textEl, row);
+      const delBtn2=document.createElement('button');delBtn2.className='achiev-item-del';delBtn2.innerHTML='×';delBtn2.title='削除';
+      delBtn2.onclick=()=>{
+        const di=(memory.achievDays||[]).findIndex(d=>d.id===day.id);
+        if(di>=0){memory.achievDays[di].items=(memory.achievDays[di].items||[]).filter(it=>it.id!==item.id);saveMemLocal();if(accessToken)saveToDrive();}
+        renderAchiev();
+      };
+      row.appendChild(chk);row.appendChild(textEl);row.appendChild(delBtn2);
+      itemsWrap.appendChild(row);
+    });
+    if(!(day.items||[]).length){
+      const ph=document.createElement('div');ph.style.cssText='font-size:12px;color:var(--text-muted);padding:6px 4px;';ph.textContent='まだ記録なし。「+ 追加」で入力しましょう。';
+      itemsWrap.appendChild(ph);
+    }
+    block.appendChild(itemsWrap);
+    scroll.appendChild(block);
+  });
+}
+
+function startAchievDayEdit(dayId, labelEl){
+  if(labelEl.tagName==='INPUT')return;
+  const oldText=labelEl.textContent;
+  const inp=document.createElement('input');inp.className='achiev-day-label-input';inp.value=oldText;inp.style.width=Math.max(80,oldText.length*10)+'px';
+  labelEl.replaceWith(inp);inp.focus();inp.select();
+  const save=()=>{
+    const newText=inp.value.trim()||oldText;
+    const di=(memory.achievDays||[]).findIndex(d=>d.id===dayId);
+    if(di>=0)memory.achievDays[di].label=newText;
+    saveMemLocal();if(accessToken)saveToDrive();
+    renderAchiev();
+  };
+  inp.addEventListener('blur',save);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=oldText;inp.blur();}});
+}
+
+function startAchievItemEdit(dayId, itemId, textEl, row){
+  if(row.querySelector('.achiev-item-text-input'))return;
+  textEl.style.display='none';
+  const area=document.createElement('textarea');area.className='achiev-item-text-input';area.value=textEl.textContent;
+  area.style.height='auto';
+  row.insertBefore(area, textEl.nextSibling);
+  area.focus();area.setSelectionRange(area.value.length,area.value.length);
+  const autoResize=()=>{area.style.height='auto';area.style.height=area.scrollHeight+'px';};
+  area.addEventListener('input',autoResize);setTimeout(autoResize,0);
+  const save=()=>{
+    const newText=area.value.trim();
+    if(newText){
+      const di=(memory.achievDays||[]).findIndex(d=>d.id===dayId);
+      if(di>=0){const ii=memory.achievDays[di].items.findIndex(it=>it.id===itemId);if(ii>=0)memory.achievDays[di].items[ii].text=newText;}
+      saveMemLocal();if(accessToken)saveToDrive();
+    }
+    renderAchiev();
+  };
+  area.addEventListener('blur',save);
+  area.addEventListener('keydown',e=>{if(e.key==='Escape')renderAchiev();if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();area.blur();}});
+}
+
+function addAchievDay(){
+  if(!memory.achievDays)memory.achievDays=[];
+  const label=todayLabel();
+  // 同じラベルがあれば重複回避
+  let finalLabel=label;
+  let n=2;
+  while(memory.achievDays.some(d=>d.label===finalLabel)){finalLabel=label+' ('+n+')';n++;}
+  memory.achievDays.push({id:Date.now().toString(),label:finalLabel,ts:Date.now(),items:[]});
+  saveMemLocal();if(accessToken)saveToDrive();
+  renderAchiev();
+}
+
+function addAchievItem(dayId){
+  const text=prompt('できたことを入力:');
+  if(!text||!text.trim())return;
+  const di=(memory.achievDays||[]).findIndex(d=>d.id===dayId);
+  if(di<0)return;
+  if(!memory.achievDays[di].items)memory.achievDays[di].items=[];
+  memory.achievDays[di].items.push({id:Date.now().toString()+Math.random().toString(36).slice(2),text:text.trim(),ts:Date.now()});
+  saveMemLocal();if(accessToken)saveToDrive();renderAchiev();
+}
+
+function quickAddAchiev(){
+  const inp=document.getElementById('achiev-input');
+  const text=inp.value.trim();if(!text)return;
+  if(!memory.achievDays)memory.achievDays=[];
+  // 今日のブロックを探す or 作成
+  const label=todayLabel();
+  let day=memory.achievDays.find(d=>d.label===label||d.label.startsWith(label.split('（')[0]));
+  if(!day){
+    day={id:Date.now().toString(),label,ts:Date.now(),items:[]};
+    memory.achievDays.push(day);
+  }
+  if(!day.items)day.items=[];
+  day.items.push({id:(Date.now()+Math.random()).toString().replace('.',''),text,ts:Date.now()});
+  inp.value='';
+  saveMemLocal();if(accessToken)saveToDrive();renderAchiev();
 }
 
 // ===== SEND MESSAGE =====
@@ -1905,9 +2106,11 @@ function makeDraggable(el, note) {
 }
 
 // ===== INIT =====
-loadLocal();loadMemLocal();renderAll();renderMemo();renderNotepad();renderShopping();renderBoard();updateCount();
+loadLocal();loadMemLocal();renderAll();renderMemo();renderNotepad();renderShopping();renderBoard();renderAchiev();updateCount();
 showOverlay();
 if(!isMobile())document.getElementById('menu-btn').style.display='none';
+// achiev input enter key
+(()=>{const ai=document.getElementById('achiev-input');if(ai)ai.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();quickAddAchiev();}});})();
 
 window.addEventListener('load',async()=>{
   try{const res=await fetch('config/prompt.txt');SYSTEM_BASE=await res.text();}catch(e){console.error('prompt.txt読み込み失敗',e);}
